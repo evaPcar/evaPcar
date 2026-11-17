@@ -71,6 +71,9 @@ ol.st li{margin-bottom:.2em}
 ol.st li::marker{font-weight:700}
 .fq{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:.4em;text-align:center;font-family:var(--f-quote);font-weight:700;font-size:1.75em;line-height:1.02}
 .fq svg{width:1.2em;height:1.2em;flex:none}
+.sheet.cpt .mid{grid-template-columns:minmax(0,1fr) 30%}
+.sheet.cpt .top,.sheet.cpt .cl{min-height:24cqw}
+.sheet.cpt .cl svg:nth-child(5),.sheet.cpt .cl svg:nth-child(8),.sheet.cpt .cl svg:nth-child(11){display:none}
 .endb{margin-top:auto;display:flex;flex-direction:column;gap:.3em}
 .tk{font-size:.85em;padding:0 1.6em}
 .sg{margin-top:auto;text-align:right;font-size:.95em;padding-right:1.6em}
@@ -470,8 +473,8 @@ const R=[
  quote:"Cangrejo que se duerme, se lo lleva José",warn:"La receta es la clásica castellana: confirmar con Raquel cómo los hace ella."},
 {id:"cochinillo",chap:"Platos",t:"Cochinillo al Horno",who:"José",time:"unas 2 h 30 min",dd:["potato","bottle","d-leaf","salt","oil"],
  ing:["1 cochinillo","Patatas","Ajo y perejil","Aceite de oliva","Pimienta y pimentón","Trufa picada","½ vaso de vino Moriles","Sal","1 botella de vino, cerveza o Coca-Cola (para ti, mientras se hace)"],
- prep:["Corta las patatas en rodajas de un dedo.","En la bandeja del horno pon unas maderas de enebro (a falta de eso, cucharas de madera) y un vaso de agua. Encima, las patatas con pimentón, pimienta y aceite.","Al horno a 170 °C 20 min. Cuando estén doradas, dales la vuelta y 10 min más.","Haz la picada: ajo, perejil, aceite, pimienta, trufa picada y medio vaso de Moriles. Unta bien la carne.","Al horno a 180 °C, con la corteza para abajo. Cada 5 min úntala con el jugo y la picada.","Cuando al pincharla esté tierna, gírala con la corteza hacia arriba, píntala con aceite con un pincel y échale sal. Sácala cuando la corteza esté crujiente."],
- quote:"Del cerdo, hasta los andares",truco:"Mientras se hace en el horno, te abres la botella de vino, la cerveza o la Coca-Cola… y te la bebes.",
+ prep:["Corta las patatas en rodajas de un dedo.","En la bandeja del horno pon unas maderas de enebro (a falta de eso, cucharas de madera) y un vaso de agua.","Pon las patatas encima con pimentón, pimienta y aceite.","Al horno a 170 °C 20 min. Cuando estén doradas, dales la vuelta y 10 min más.","Haz la picada: pica el ajo, el perejil y la trufa; luego añade la pimienta, el aceite y el vino Moriles.","Ábrete tu vino, cerveza o Coca-Cola :)","Unta la carne con la picada y ponla encima de las patatas con la corteza (piel) hacia abajo, con el horno a 180 °C.","Cada 5 min ve untándola con la picada y el jugo de la bandeja por encima.","Cuando esté tierna (ve pinchándola), dale la vuelta: corteza hacia arriba, píntala con aceite y espolvorea sal.","Sácala cuando la corteza esté crujiente, bebe tu trago favorito ¡y sírvela!"],
+ quote:"Sin prisa y con vino se hace el cochinillo",
  warn:"Confirmar con José para cuántas personas es y cuánto tiempo tarda en total."},
 {id:"rosquillos",chap:"Dulces",t:"Rosquillos",who:"Raquel y Eva",book:"Recetario Pacheco Carnicero",time:"1 h 30 min",dd:["egg","bottle","scissors","flour","sugar"],
  ing:["4 huevos","2 vasitos de aceite frito","1 vasito de anís","1 vasito de leche","4 gaseosillas","1 kg de harina","400 g de azúcar","Aceite para freír"],
@@ -567,14 +570,16 @@ function calibrate(){const m=R.find(r=>r.ref);let lo=2,hi=5;
 // 2) paginate: fill each page with as many steps as fit, the quote goes on the last one
 function paginate(r){const n=r.prep.length;
   if(!over(firstPage(r,n,true))) return [firstPage(r,n,true)];
-  // two or more sheets: sheet 1 = title, ingredients and the drawing; the steps start on sheet 2
+  // two sheets: sheet 1 = title, ingredients and the drawing; all the steps on sheet 2.
+  // if the steps don't fit on one sheet, they start on sheet 1 under the ingredients instead
+  if(over(nextPage(r,0,n,true))) return paginateOld(r);
   const pages=[coverPage(r)];let a=0;
   while(a<n){let b=n; while(b>a+1&&over(nextPage(r,a,b,b===n))) b--;
     if(b===n&&over(nextPage(r,a,n,true))) b=n-1>a?n-1:n;
     pages.push(nextPage(r,a,b,b===n)); a=b; if(pages.length>6) break;}
   return pages;}
 function paginateOld(r){const n=r.prep.length,pages=[];let a=0,first=true;
-  while(true){const make=(b,end)=>first?firstPage(r,b,end):nextPage(r,a,b,end);
+  while(true){const make=(b,end)=>first?firstPage(r,b,end).replace('<div class="sheet">','<div class="sheet cpt">'):nextPage(r,a,b,end);
     let b=n; while(b>a&&over(make(b,b===n))) b--;
     if(b===n&&!over(make(n,true))){pages.push(make(n,true));break;}
     if(b===a){ if(!first) b=a+1; }
@@ -599,6 +604,10 @@ function build(){
     ih+=`<a href="#${r.id}"><span class="t">${esc(r.t)}</span><span class="dots"></span><span>${r.p0}</span></a>`;});
   document.getElementById("idxpages").innerHTML=`<div class="pgw">${ih}</div></div>`;
   meas.innerHTML="";
+  // drop any loose doodle that lands on top of text
+  document.querySelectorAll("#book .sheet").forEach(s=>{const txt=[...s.querySelectorAll("li,.fq,.tk,h4,.sg")].map(e=>e.getBoundingClientRect());
+    s.querySelectorAll(":scope > svg.deco").forEach(d=>{const r=d.getBoundingClientRect();
+      if(txt.some(x=>r.left<x.right&&r.right>x.left&&r.top<x.bottom&&r.bottom>x.top)) d.remove();});});
 }
 build();
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
