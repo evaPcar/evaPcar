@@ -66,6 +66,8 @@ article.is-done .sheet{opacity:.65}
 ul.ing{list-style:none;margin:0;padding:0}
 ul.ing li{padding-left:.75em;text-indent:-.75em}
 ul.ing li::before{content:"• "}
+ul.ing li.sub{font-weight:700;padding-left:0;text-indent:0;break-after:avoid}
+ul.ing li.sub::before{content:none}
 ol.st{margin:0;padding-left:1.6em}
 ol.st li{margin-bottom:.2em}
 ol.st li::marker{font-weight:700}
@@ -529,10 +531,11 @@ const R=[
  ing:["3 huevos","3 cucharadas de azúcar","Bizcochos de soletilla","250-300 g de mascarpone","4 tazas de café","Marsala o moscatel","Cacao amargo"],
  prep:["Mezcla las yemas con el azúcar.","Monta las claras a punto de nieve.","Añade a las yemas el queso y las claras, mezclando de abajo arriba para no bajarlas.","Mezcla el café frío con un chorrito de licor y moja los bizcochos rápido.","Capa de bizcochos, capa de crema… y termina con crema.","Nevera mínimo 6 horas. Antes de servir, cacao con un colador."],
  quote:"Tiramisú quiere decir «levántame»… y vaya si lo hace",warn:"El papel de la Toñi acaba en el paso 3: del 4 al 6 son los pasos normales. Comprobar con ella."},
-{id:"lechefrita",chap:"Dulces",t:"Leche Frita",who:"Toñi",time:"30 min + 4 h",dd:["milk","lemon","egg","sugar","pan"],
- ing:["1 l de leche","150 g de azúcar","90 g de maicena","4 yemas","1 rama de canela","Piel de 1 limón","Harina y 2 huevos","Aceite para freír","Azúcar y canela"],
- prep:["Calienta 800 ml de leche con la canela y la piel de limón. Cuando hierva, deja reposar 10 minutos y cuela.","Mezcla los otros 200 ml de leche, fríos, con la maicena, el azúcar y las yemas.","Junta las dos y remueve al fuego hasta que espese mucho, 8-10 minutos.","A una fuente, tapa con film y a la nevera mínimo 4 horas: bien fría y espesa, o se deshace.","Corta en cuadrados, pásalos por harina y huevo y fríelos hasta que se doren.","Rebózalos en azúcar con canela."],
- quote:"Me hacen con leche y me fríen… ¡y no me derrito!",warn:"No tenía la receta de la Toñi: esta es la clásica. Si tienes la suya, pásamela."},
+{id:"lechefrita",chap:"Dulces",t:"Leche Frita",who:"Toñi",time:"30 min + 1 día",dd:["milk","lemon","egg","sugar","pan"],
+ ing:[{s:"Para la crema"},"1 l de leche entera","7-8 cucharadas de maicena","7-8 cucharadas de azúcar","1 rama de canela","1 tira de piel de limón",{s:"Para rebozar y freír"},"50 g de harina de trigo","2 huevos","300 ml de aceite de oliva suave","30 g de azúcar","1 cucharadita de canela molida"],
+ prep:["Infusiona la leche: reserva un vasito y pon el resto en un cazo con la canela, el limón y el azúcar. Calienta hasta que humee, sin hervir, y deja infusionar 10 min.","En el vasito de leche fría, disuelve la maicena hasta que no queden grumos.","Quita la canela y el limón. A fuego medio-bajo, añade la maicena y remueve sin parar con varillas hasta que espese mucho. Cuando empiece a cocer, 2 min más, hasta que haga el «gordo puff».","Échala en una fuente engrasada o con film, de 2 cm de grosor. Deja templar, tapa con film y a la nevera 1 día, hasta que esté muy firme.","Desmolda y corta en cuadrados de unos 5 cm.","Pasa cada trozo primero por harina y luego por huevo batido.","Fríe por tandas en aceite a fuego medio-alto, unos 3 min, hasta que se doren. Escurre en papel.","Mezcla el azúcar con la canela y pasa los trozos aún calientes. ¡Sírvela templada!"],
+ quote:"Me hacen con leche y me fríen… ¡y no me derrito!",
+ truco:["La crema tiene que quedar bien espesa para poder cortarla.","Fríe a fuego medio-alto: dora rápido sin que se deshaga por dentro.","La maicena se puede cambiar por harina de trigo (necesita algo más de cocción)."]},
 {id:"panacota",chap:"Dulces",t:"Panacota",who:"Raquel",time:"30 min + 1 noche",dd:["milk","sugar","d-whisk","d-cup","d-spoon"],
  ing:["½ l de nata de cocinar","Azúcar (a ojo)","Vainilla (esencia o vaina)","1 sobre de gelatina neutra","Caramelo (opcional)","Para servir: mermelada de moras, helado, chocolate o virutas de colores"],
  prep:["Calienta la nata en un cazo.","Añade azúcar a ojo y vainilla, y remueve con varillas hasta que se deshaga el azúcar.","Añade el sobre de gelatina y bate fuerte con varillas unos 10 min, hasta que se deshaga.","Añade bastante vainilla: esencia, o la vaina rasgada.","Ponla en un molde o en vasitos de café (con caramelo abajo, si quieres).","Déjala un cuarto de hora fuera y luego a la nevera hasta el día siguiente.","Sírvela con lo que quieras: mermelada de moras, helado, chocolate… ¡o virutas de colores!"],
@@ -592,15 +595,15 @@ const ribbon=r=>{const who=("• "+(r.byline||"de "+r.who)+" •").toUpperCase()
    <text x="${sv?100:89}" y="${sv?21.5:23.5}" text-anchor="middle" font-family="Kalam, cursive" font-size="15"${who.length>12?` textLength="${sv?104:128}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(who)}</text>
    ${tail(sv,29)}${tail(r.time,172)}</svg>${under?`<div class="tm">${esc(under)}</div>`:""}`;};
 const stepsHTML=(r,a,b)=>b>a?`<ol class="st" start="${a+1}">${r.prep.slice(a,b).map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`:"";
-const quoteHTML=r=>`<div class="endb">${r.quote?`<div class="fq">“${esc(r.quote.toUpperCase())}”${use("d-leaf")}</div>`:""}${r.truco?`<div class="tk">✱ <b>TRUCO:</b> ${esc(r.truco)}</div>`:""}</div>`;
+const quoteHTML=r=>`<div class="endb">${r.quote?`<div class="fq">“${esc(r.quote.toUpperCase())}”${use("d-leaf")}</div>`:""}${r.truco?(Array.isArray(r.truco)?`<div class="tk">✱ <b>TRUCOS:</b>${r.truco.map(x=>`<br>· ${esc(x)}`).join("")}</div>`:`<div class="tk">✱ <b>TRUCO:</b> ${esc(r.truco)}</div>`):""}</div>`;
 
 function firstPage(r,b,end){return `<div class="sheet">${chrome(r)}
   <div class="top"><div class="cl">${cluster(r)}</div><div class="tw"><h3>${esc(r.t)}</h3>${ribbon(r)}</div></div>
-  <div class="mid"><div><h4>Ingredientes</h4><ul class="ing">${r.ing.map(x=>`<li>${ingText(x)}</li>`).join("")}</ul></div><div class="hero">${ink("H-"+(r.hero||r.id))}</div></div>
+  <div class="mid"><div><h4>Ingredientes</h4><ul class="ing">${r.ing.map(x=>typeof x==="object"?`<li class="sub">${esc(x.s)}</li>`:`<li>${ingText(x)}</li>`).join("")}</ul></div><div class="hero">${ink("H-"+(r.hero||r.id))}</div></div>
   ${b>0?`<h4>Preparación</h4>${stepsHTML(r,0,b)}`:""}${end?quoteHTML(r):`<div class="sg">sigue en la hoja siguiente →</div>`}</div>`;}
 function coverPage(r){return `<div class="sheet">${chrome(r)}
   <div class="top"><div class="cl">${cluster(r)}</div><div class="tw"><h3>${esc(r.t)}</h3>${ribbon(r)}</div></div>
-  <h4>Ingredientes</h4><ul class="ing two">${r.ing.map(x=>`<li>${ingText(x)}</li>`).join("")}</ul>
+  <h4>Ingredientes</h4><ul class="ing two">${r.ing.map(x=>typeof x==="object"?`<li class="sub">${esc(x.s)}</li>`:`<li>${ingText(x)}</li>`).join("")}</ul>
   <div class="herobig">${ink("H-"+(r.hero||r.id))}</div>
   <div class="sg">la preparación, en la hoja siguiente →</div></div>`;}
 function nextPage(r,a,b,end){return `<div class="sheet">${chrome(r)}
@@ -621,7 +624,12 @@ function paginate(r){const n=r.prep.length;
   if(!over(firstPage(r,n,true))) return [firstPage(r,n,true)];
   // two sheets: sheet 1 = title, ingredients and the drawing; all the steps on sheet 2.
   // if the steps don't fit on one sheet, they start on sheet 1 under the ingredients instead
-  if(over(nextPage(r,0,n,true))) return paginateOld(r);
+  if(over(nextPage(r,0,n,true))){
+    const old=paginateOld(r);
+    if(!/<ol class="st"/.test(old[0])){ // no steps fit on sheet 1: big drawing there, steps split evenly over two sheets
+      for(let m=Math.ceil(n/2);m>0&&m<n;m++){ if(!over(nextPage(r,0,m,false))&&!over(nextPage(r,m,n,true))) return [coverPage(r),nextPage(r,0,m,false),nextPage(r,m,n,true)]; }
+    }
+    return old;}
   const pages=[coverPage(r)];let a=0;
   while(a<n){let b=n; while(b>a+1&&over(nextPage(r,a,b,b===n))) b--;
     if(b===n&&over(nextPage(r,a,n,true))) b=n-1>a?n-1:n;
