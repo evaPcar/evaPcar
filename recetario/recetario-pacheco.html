@@ -1,0 +1,576 @@
+<title>Recetario Pacheco</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Amatic+SC:wght@700&family=Kalam:wght@300;400;700&display=swap">
+<style>
+/* Layout: the user's own hand-drawn A5 design, rebuilt; every recipe flows onto as many A5 pages as it needs, measured against her mojito page. Single paper look by choice. */
+:root{
+  --desk:#3a2c22; --paper:#fcfbf7; --ink:#1a1a1a; --soft:#5d554c; --note:#f1e2c4; --warn:#fbe3c8;
+  --f-title:"Yellowtail","Brush Script MT",cursive;
+  --f-body:"Kalam","Segoe Print","Comic Sans MS",cursive;
+  --f-quote:"Amatic SC","Arial Narrow",sans-serif;
+  --fs:3.2; color-scheme:dark;
+}
+body{background:var(--desk);color:var(--note);font-family:var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 60px}
+.wrap{width:100%;max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+header{text-align:center}
+header h1{font-family:var(--f-title);font-weight:400;font-size:clamp(2.6rem,8vw,4.2rem);margin:0;line-height:1}
+header p{margin:.5rem auto 0;color:#dccbad;max-width:62ch;line-height:1.5}
+.summary{background:rgba(241,226,196,.07);border:1px solid rgba(241,226,196,.2);border-radius:8px;padding:12px 16px;overflow-x:auto}
+.summary table{border-collapse:collapse;width:100%;font-size:.98rem}
+.summary th,.summary td{text-align:left;padding:5px 10px;border-bottom:1px solid rgba(241,226,196,.14)}
+.summary th{font-weight:700;color:var(--note)}
+.summary td.n{font-variant-numeric:tabular-nums}
+.summary a{color:var(--note)}
+.chip{display:inline-block;border-radius:999px;padding:0 9px;font-size:.85rem;border:1px solid rgba(241,226,196,.4)}
+.chip.two{background:rgba(241,226,196,.18)}.chip.three{background:var(--note);color:var(--desk)}
+
+article{display:flex;flex-direction:column;gap:12px;scroll-margin-top:16px}
+article>h2{font-family:var(--f-title);font-weight:400;font-size:2.1rem;margin:12px 0 0;line-height:1;color:var(--note)}
+.pages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media (max-width:760px){.pages{grid-template-columns:1fr}}
+.pgw{container-type:inline-size;min-width:0;display:flex;flex-direction:column;gap:6px}
+.pglabel{font-size:.9rem;color:#cdbb9c;text-align:center}
+.side{display:flex;flex-direction:column;gap:8px}
+.warn{background:var(--warn);border-radius:6px;padding:8px 12px;font-size:.95rem;color:#5a2a12}
+.warn b{font-weight:700}
+.done{display:flex;align-items:center;gap:8px;font-size:.95rem;color:var(--note);cursor:pointer;align-self:flex-end}
+.done input:focus-visible{outline:2px solid var(--note);outline-offset:2px}
+article.is-done .sheet{opacity:.65}
+
+/* ---------- the A5 sheet ---------- */
+.sheet{box-sizing:border-box;position:relative;width:100%;height:calc(100cqw * 210 / 148);font-size:calc(var(--fs) * 1cqw);
+  background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.38;
+  padding:13cqw 12.5cqw 11.5cqw;display:flex;flex-direction:column;gap:.3em;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.fr{position:absolute;inset:8cqw 7.5cqw;border:.5cqw solid var(--ink);pointer-events:none}
+.fr::after{content:"";position:absolute;inset:.8cqw;border:.18cqw solid var(--ink)}
+.hd{position:absolute;top:8.25cqw;left:50%;transform:translate(-50%,-50%);background:var(--paper);padding:0 1.4cqw;display:flex;align-items:center;gap:.8cqw;
+  font-size:2.6cqw;letter-spacing:.14em;white-space:nowrap;line-height:1}
+.hd svg{width:4cqw;height:4cqw;flex:none}
+.cn{position:absolute;width:5cqw;height:5cqw;pointer-events:none}
+.deco{position:absolute;pointer-events:none}
+
+.top{display:grid;grid-template-columns:38% minmax(0,1fr);gap:.4em;min-height:30cqw}
+.cl{position:relative;min-height:30cqw}
+.cl svg{position:absolute}
+.tw{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1em;min-width:0}
+.tw h3{font-family:var(--f-title);font-weight:400;font-size:2.75em;line-height:.95;margin:0;text-align:center;text-wrap:balance}
+.tm{font-size:.82em;text-align:center;margin:-.2em 0 0}
+.rb{display:block;width:100%;max-width:19em;aspect-ratio:200/50;margin-top:-.15em}
+.mid{display:grid;grid-template-columns:minmax(0,1fr) 46%;gap:.5em;align-items:start}
+.hero{position:relative;aspect-ratio:1;width:100%}
+.hero svg{position:absolute;inset:0;width:100%;height:100%}
+.sheet h4{font-weight:700;font-size:1.06em;margin:.25em 0 0;letter-spacing:.03em;text-transform:uppercase;line-height:1.2}
+ul.ing{list-style:none;margin:0;padding:0}
+ul.ing li{padding-left:.75em;text-indent:-.75em}
+ul.ing li::before{content:"• "}
+ol.st{margin:0;padding-left:1.6em}
+ol.st li{margin-bottom:.2em}
+ol.st li::marker{font-weight:700}
+.fq{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:.4em;text-align:center;font-family:var(--f-quote);font-weight:700;font-size:1.75em;line-height:1.02}
+.fq svg{width:1.2em;height:1.2em;flex:none}
+.sg{margin-top:auto;text-align:right;font-size:.95em;padding-right:1.6em}
+.ct{text-align:center;margin-top:.4em}
+.h4c{margin-top:1.6em!important}
+ul.ing.two{columns:2;column-gap:1.2em}
+ul.ing.two li{break-inside:avoid}
+.herobig{flex:1;min-height:0;position:relative;margin-top:.4em}
+.herobig svg{position:absolute;inset:0;width:100%;height:100%}
+.ct h3{font-family:var(--f-title);font-weight:400;font-size:2em;line-height:1;margin:0}
+.ct span{font-size:.9em}
+.sheet.idx{font-size:calc(var(--fs) * .7cqw)}
+.idx h3{font-family:var(--f-title);font-weight:400;font-size:3em;text-align:center;margin:.2em 0 .1em;line-height:1}
+.idx .chap{font-weight:700;text-transform:uppercase;font-size:.95em;margin-top:.35em}
+.idx a{display:flex;gap:.35em;color:var(--ink);text-decoration:none;font-size:.92em}
+.idx a .dots{flex:1;border-bottom:.08em dotted var(--ink);transform:translateY(-.3em);min-width:1em}
+.idx a:hover .t{text-decoration:underline}
+#meas{position:absolute;left:-10000px;top:0;width:520px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<pattern id="h" patternUnits="userSpaceOnUse" width="2.2" height="2.2" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="2.2" stroke="#111" stroke-width=".7"/></pattern>
+<pattern id="hx" patternUnits="userSpaceOnUse" width="2.2" height="2.2" patternTransform="rotate(45)"><path d="M0 0V2.2M0 0H2.2" stroke="#111" stroke-width=".6"/></pattern>
+<pattern id="hb" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#111" stroke-width="1"/></pattern>
+
+<pattern id="hS" patternUnits="userSpaceOnUse" width=".4" height=".4" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2=".4" stroke="#111" stroke-width=".09"/></pattern>
+<pattern id="hxS" patternUnits="userSpaceOnUse" width=".4" height=".4" patternTransform="rotate(45)"><path d="M0 0V.4M0 0H.4" stroke="#111" stroke-width=".08"/></pattern>
+<pattern id="hbS" patternUnits="userSpaceOnUse" width=".6" height=".6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2=".6" stroke="#111" stroke-width=".12"/></pattern>
+<pattern id="hM" patternUnits="userSpaceOnUse" width="1" height="1" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1" stroke="#111" stroke-width=".25"/></pattern>
+<pattern id="hxM" patternUnits="userSpaceOnUse" width="1" height="1" patternTransform="rotate(45)"><path d="M0 0V1M0 0H1" stroke="#111" stroke-width=".22"/></pattern>
+<pattern id="hbM" patternUnits="userSpaceOnUse" width="1.5" height="1.5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.5" stroke="#111" stroke-width=".35"/></pattern>
+<symbol id="corner" viewBox="0 0 60 60"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><path d="M4 56V16Q4 4 16 4H56"/><path d="M10 50V20q0-10 10-10h30"/><path d="M16 42c0-15 11-26 26-26"/><path d="M42 16c6 0 8 6 3 8-4 1-5-4-2-4"/><path d="M16 42c0 6 6 8 8 3 1-4-4-5-4-2"/><path d="M20 20q11 1 13 13q-11-1-13-13z" fill="url(#hb)"/><circle cx="10" cy="10" r="2.6" fill="#111"/><circle cx="56" cy="4" r="1.5" fill="#111"/><circle cx="4" cy="56" r="1.5" fill="#111"/></g></symbol>
+<symbol id="orn" viewBox="0 0 200 20"><g fill="none" stroke="#111" stroke-width="1" stroke-linecap="round"><path d="M18 10H80M120 10H182"/><path d="M80 10c6 0 8-6 4-7s-5 4-1 4"/><path d="M120 10c-6 0-8-6-4-7s5 4 1 4"/><path d="M84 10c4 0 5 4 2 5M116 10c-4 0-5 4-2 5"/><path d="M100 3l6 7-6 7-6-7z" fill="url(#hb)"/><circle cx="18" cy="10" r="1.6" fill="#111"/><circle cx="182" cy="10" r="1.6" fill="#111"/></g></symbol>
+<symbol id="swash" viewBox="0 0 160 16"><g fill="none" stroke="#111" stroke-width="1.1" stroke-linecap="round"><path d="M6 10C40 2 60 14 80 8s40-6 74 1"/><path d="M80 8c-4 4-1 7 2 5"/></g></symbol>
+<symbol id="sprig" viewBox="0 0 40 90"><g stroke="#111" stroke-width="1.3" stroke-linecap="round"><path d="M20 88Q18 50 22 4" fill="none"/><path d="M20 70q-14-4-16-16q12 2 16 16z" fill="url(#hb)"/><path d="M21 56q14-4 16-16q-12 2-16 16z" fill="#fff"/><path d="M20 42q-13-4-14-15q11 2 14 15z" fill="url(#hb)"/><path d="M21 28q12-4 13-14q-10 2-13 14z" fill="#fff"/></g></symbol>
+<symbol id="star" viewBox="0 0 20 20"><path d="M10 1L12 8L19 10L12 12L10 19L8 12L1 10L8 8Z" fill="#fff" stroke="#111" stroke-width="1.1" stroke-linejoin="round"/><path d="M10 10L12 12L10 19ZM10 10L19 10L12 12Z" fill="url(#hb)"/></symbol>
+<symbol id="ribbon" viewBox="0 0 30 36"><path d="M4 8q11-6 22 0q-11 6-22 0zM15 8l-6 26M15 8l6 26" fill="none" stroke="#9b2d3a" stroke-width="3" stroke-linecap="round"/><circle cx="15" cy="8" r="3" fill="#9b2d3a"/></symbol>
+<symbol id="shadow" viewBox="0 0 100 16"><ellipse cx="50" cy="8" rx="48" ry="7" fill="url(#hb)"/></symbol>
+<symbol id="key" viewBox="0 0 24 24"><circle cx="7" cy="12" r="4.5" fill="url(#h)" stroke="#111" stroke-width="1.6"/><circle cx="7" cy="12" r="1.6" fill="#fff" stroke="#111"/><path d="M11.5 12H22M18 12v4M21 12v3" stroke="#111" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="dot" viewBox="0 0 24 24"><path d="M12 6l1.5 4.5L18 12l-4.5 1.5L12 18l-1.5-4.5L6 12l4.5-1.5z" fill="#fff" stroke="#111" stroke-width="1.1"/></symbol>
+
+<g id="lib">
+<symbol id="egg" viewBox="0 0 24 24"><path d="M12 2.5c4 0 7 6 7 11a7 7 0 0 1-14 0c0-5 3-11 7-11z" fill="#fff"/><path d="M16.5 8c1.6 2.4 2.5 4.6 2.5 5.5a7 7 0 0 1-9.5 6.5c4.5-.5 7.5-5 7-12z" fill="url(#h)"/><path d="M12 2.5c4 0 7 6 7 11a7 7 0 0 1-14 0c0-5 3-11 7-11z" fill="none" stroke="#111" stroke-width="1.3"/></symbol>
+<symbol id="cracked" viewBox="0 0 40 40"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M6 24q0 12 12 12q12 0 12-12l-3-3-3 3-3-3-3 3-3-3-3 3-3-3z" fill="#fff"/><path d="M24 24l3-3 3 3q0 12-12 12q8-3 6-12z" fill="url(#hb)"/><path d="M14 15l3 3 3-3 3 3 3-3q-2-11-6-12q-5 1-6 12z" fill="#fff" transform="rotate(-25 20 10) translate(4 -4)"/><path d="M30 31q5 2 7 6" fill="none" stroke-linecap="round"/><circle cx="37" cy="37" r="1.4" fill="#111"/></g></symbol>
+<symbol id="potato" viewBox="0 0 24 24"><path d="M4.5 10c2-5.5 13-6.5 16-1s-1 12-7.5 12S2.5 15 4.5 10z" fill="#fff"/><path d="M20.5 9c2 5-1.5 12-7.5 12-3 0-5.5-1-7-3 7 1.5 13-2 14.5-9z" fill="url(#h)"/><path d="M4.5 10c2-5.5 13-6.5 16-1s-1 12-7.5 12S2.5 15 4.5 10z" fill="none" stroke="#111" stroke-width="1.3"/></symbol>
+<symbol id="onion" viewBox="0 0 24 24"><path d="M12 5c5 3 8 7 6 11.5s-10 4-12 0 1-8.5 6-11.5z" fill="#fff"/><path d="M15 7.5c3 2.5 4.5 6 3 9-1 2.2-3.5 3.3-6 3.4 3-1.5 4.5-6 3-12.4z" fill="url(#h)"/><path d="M12 5c5 3 8 7 6 11.5s-10 4-12 0 1-8.5 6-11.5z" fill="none" stroke="#111" stroke-width="1.3"/><path d="M12 5V1.5M12 8c-2 3-2 8 0 12" stroke="#111" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="oil" viewBox="0 0 24 24"><path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3z" fill="#fff"/><path d="M12.5 9h3.5v12a1 1 0 0 1-1 1h-2.5z" fill="url(#hx)"/><path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3z" fill="none" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 13h8M8 17h8" stroke="#111"/></symbol>
+<symbol id="salt" viewBox="0 0 24 24"><path d="M7 9h10l-1 12H8z" fill="#fff"/><path d="M13 9h4l-1 12h-3z" fill="url(#h)"/><path d="M7 9h10l-1 12H8z" fill="none" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/><path d="M7 9q5-7 10 0z" fill="url(#hx)" stroke="#111" stroke-width="1.3"/></symbol>
+<symbol id="lemon" viewBox="0 0 24 24"><path d="M3 12c2-6 16-6 18 0-2 6-16 6-18 0z" fill="#fff"/><path d="M5 14c4 3 10 3 14 0-2 3.5-12 3.5-14 0z" fill="url(#h)"/><path d="M3 12c2-6 16-6 18 0-2 6-16 6-18 0z" fill="none" stroke="#111" stroke-width="1.3"/><path d="M21 12h2M1 12h2" stroke="#111" stroke-width="1.3"/></symbol>
+<symbol id="flour" viewBox="0 0 24 24"><path d="M6 7h12l1 14H5z" fill="#fff"/><path d="M14.5 7H18l1 14h-4.5z" fill="url(#h)"/><path d="M6 7h12l1 14H5z" fill="none" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 7l2-3h8l2 3" fill="none" stroke="#111" stroke-width="1.3"/><path d="M8 13h5M8 15.5h4" stroke="#111"/></symbol>
+<symbol id="sugar" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M4 10l5-2 5 2v6l-5 2-5-2z" fill="#fff"/><path d="M9 12l5-2v6l-5 2z" fill="url(#h)"/><path d="M11 14l5-2 5 2v5l-5 2-5-2z" fill="#fff"/><path d="M16 16l5-2v5l-5 2z" fill="url(#h)"/></g></symbol>
+<symbol id="milk" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.3" stroke-linejoin="round"><path d="M7 8l2-4h6l2 4v13H7z" fill="#fff"/><path d="M12 8h5v13h-5z" fill="url(#h)"/><path d="M7 8h10M9 4h6"/></g></symbol>
+<symbol id="sandwich" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 15L12 4l9 11z" fill="#fff"/><path d="M12 4l9 11h-5z" fill="url(#h)"/><path d="M3 15q1.5 2.5 3 0q1.5 2.5 3 0q1.5 2.5 3 0q1.5 2.5 3 0q1.5 2.5 3 0q1.5 2.5 3 0" fill="#fff"/><path d="M3 17.5h18v2.5H3z" fill="#fff"/><path d="M15 17.5h6V20h-6z" fill="url(#hx)"/></g></symbol>
+<symbol id="mayo" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><rect x="6" y="3" width="12" height="4" rx="1" fill="url(#hx)"/><path d="M6.5 7h11v12a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2z" fill="#fff"/><path d="M14 7h3.5v12a2 2 0 0 1-2 2H14z" fill="url(#h)"/><rect x="8" y="11" width="6" height="5" fill="#fff"/></g></symbol>
+<symbol id="shrimp" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6c-6-2-13 2-13 8 0 3 2 5 5 5 1 0 2-1 1.5-2-2-.5-3-2-2.5-4 1-3 5-4 9-3z" fill="#fff"/><path d="M8.5 13c-.5 2 .5 3.5 2.5 4 .5 1-.5 2-1.5 2-3 0-5-2-5-5 0-1 .2-2 .6-3z" fill="url(#h)"/><path d="M10 8.5l1.5 3M13 7.5l.8 3M7 11l2 2" fill="none"/><path d="M10.5 18.5l-3.5 3h4.5z" fill="#fff"/><path d="M18 6q3-3 5-2M18 6q2-4 1-5" fill="none"/><circle cx="17" cy="7.5" r=".8" fill="#111"/></g></symbol>
+<symbol id="croqueta" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9.5" ry="5.5" fill="#fff"/><path d="M4 14.5c3 3.5 13 3.5 16 0-1.5 3-5 3.5-8 3.5s-6.5-.5-8-3.5z" fill="url(#hx)"/><ellipse cx="12" cy="12" rx="9.5" ry="5.5" fill="none" stroke="#111" stroke-width="1.3"/><g fill="#111"><circle cx="8" cy="10" r=".5"/><circle cx="11" cy="9" r=".5"/><circle cx="14" cy="10.5" r=".5"/><circle cx="9.5" cy="12.5" r=".5"/><circle cx="16" cy="9.5" r=".5"/></g></symbol>
+<symbol id="bread" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.3" stroke-linejoin="round"><path d="M3 15c0-6 4-9 9-9s9 3 9 9c0 2-1 3-3 3H6c-2 0-3-1-3-3z" fill="#fff"/><path d="M15 6.6c4 1.4 6 4.4 6 8.4 0 2-1 3-3 3h-4c3-2 3.5-7 1-11.4z" fill="url(#h)"/><path d="M8 9l2 3M12 8l2 3M16 9.5l1.5 2.5" fill="none" stroke-linecap="round"/></g></symbol>
+<symbol id="cheese" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 11L18 5l3 6z" fill="#fff"/><path d="M3 11h18v7H3z" fill="#fff"/><path d="M15 11h6v7h-6z" fill="url(#h)"/><circle cx="7" cy="14.5" r="1.5" fill="url(#hx)"/><circle cx="11.5" cy="13" r="1" fill="url(#hx)"/><circle cx="12" cy="9" r="1" fill="url(#hx)"/></g></symbol>
+<symbol id="eggplant" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M7 9c-4 4-4 10 1 12s9-2 10-7c1-4 0-6-3-7-3-1-5 0-8 2z" fill="url(#h)"/><path d="M8 12c-1.5 2-1.5 5 0 6" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M12 7q3-2 6 1l-2 1q-1-1-4-2z" fill="#fff"/><path d="M15.5 6l2-3.5" stroke-linecap="round"/></g></symbol>
+<symbol id="mushroom" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M9 12v6c0 2.5 6 2.5 6 0v-6" fill="#fff"/><path d="M12.5 12h2.5v6c0 1.5-1.2 2-2.5 2.2z" fill="url(#h)"/><path d="M3 12c0-5 4-8 9-8s9 3 9 8z" fill="#fff"/><path d="M14 4.3c4 .8 7 3.6 7 7.7h-4c0-3-1-6-3-7.7z" fill="url(#h)"/></g></symbol>
+<symbol id="zucchini" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 16c2-4 12-9 17-9 2 0 2 2 0 3-4 2-12 8-15 8-2 0-3-1-2-2z" fill="#fff"/><path d="M4 17c4 0 11-5 16-7-4 3-11 8-15 8z" fill="url(#hx)"/><path d="M6 14.5q6-4 12-6.5M8 15.5q5-3 9-5" fill="none"/><path d="M20 7l2.5-1.5" stroke-width="1.6" stroke-linecap="round"/></g></symbol>
+<symbol id="pepper" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M6 8c-3 3-2 11 2 12 2 1 3-1 4-1s2 2 4 1c4-1 5-9 2-12-2-2-4-1-6-1s-4-1-6 1z" fill="#fff"/><path d="M15 7.5c2 0 3 .5 3 .5 3 3 2 11-2 12-1 .5-2 .2-2.7-.4 2-3 2.7-8 1.7-12.1z" fill="url(#h)"/><path d="M12 7V4q1-2 3-2" fill="none" stroke-linecap="round"/><path d="M12 8v10" fill="none"/></g></symbol>
+<symbol id="chili" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 6c-2 7 3 14 15 16-7-4-10-9-10-16z" fill="url(#hx)"/><path d="M8 9c0 4 2 8 6 11" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M6 6q2-1 5 0" fill="#fff"/><path d="M8.5 5.5Q8 3 10 1.5" fill="none"/></g></symbol>
+<symbol id="tuna" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 10v5c0 4 18 4 18 0v-5" fill="#fff"/><path d="M3 11.5c0 4 18 4 18 0v2c0 4-18 4-18 0z" fill="url(#hx)"/><ellipse cx="12" cy="10" rx="9" ry="3" fill="#fff"/><ellipse cx="12" cy="10" rx="6.5" ry="1.8" fill="none"/><path d="M15 9.5l3-1.5" stroke-width="1.6" stroke-linecap="round"/></g></symbol>
+<symbol id="olive" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M4 6q8 0 16 10" fill="none" stroke-linecap="round"/><ellipse cx="9" cy="14" rx="4" ry="5.5" transform="rotate(-20 9 14)" fill="url(#h)"/><ellipse cx="17" cy="16" rx="3.5" ry="5" transform="rotate(20 17 16)" fill="url(#hx)"/><ellipse cx="8" cy="12" rx="1" ry="1.8" transform="rotate(-20 8 12)" fill="#fff" stroke="none"/><path d="M11 6q3-4 6-2q-3 3-6 2z" fill="#fff"/></g></symbol>
+<symbol id="bowl" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M4 11q8-7 16 0" fill="#fff"/><g fill="none"><path d="M8 9l1 .4M11 7.5l1 .2M14 8.5l1-.3M10 10l1 .3M16 10l.8.4M6.5 10.5l.8-.2"/></g><path d="M2.5 11h19c0 6-4.5 9-9.5 9s-9.5-3-9.5-9z" fill="#fff"/><path d="M15 11h6.5c0 5-3 8-7 8.8 1.5-2.5 1.5-6 .5-8.8z" fill="url(#h)"/></g></symbol>
+<symbol id="macaroni" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><g transform="rotate(-25 9 8)"><rect x="3" y="6" width="10" height="4.5" rx="1" fill="#fff"/><ellipse cx="13" cy="8.25" rx="1.3" ry="2.25" fill="url(#hx)"/></g><g transform="rotate(15 13 15)"><rect x="8" y="13" width="10" height="4.5" rx="1" fill="#fff"/><path d="M8 15.5h10v2H8z" fill="url(#h)" stroke="none"/><ellipse cx="18" cy="15.25" rx="1.3" ry="2.25" fill="url(#hx)"/></g></g></symbol>
+<symbol id="ball" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5" fill="#fff"/><path d="M19 7c3 4 2 11-4 13.6 4-3 5.5-8.5 4-13.6z" fill="url(#h)"/><path d="M12 8.5l3.3 2.4-1.3 3.9h-4l-1.3-3.9z" fill="#111"/><path d="M12 8.5V2.5M15.3 10.9l5.8-1.8M14 14.8l3.4 4.9M10 14.8l-3.4 4.9M8.7 10.9L2.9 9.1" fill="none"/></g></symbol>
+<symbol id="pan" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M17.5 12.5l5.5-2.5" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="10" cy="13" rx="8.5" ry="5" fill="url(#hx)"/><ellipse cx="10" cy="12.3" rx="7" ry="3.8" fill="#fff"/><path d="M4.5 12.5q5.5-4.5 11 0q-5.5 3.5-11 0z" fill="#fff"/><path d="M4.5 12.5q5.5 3.5 11 0q-5.5 2-11 0z" fill="url(#h)"/></g></symbol>
+<symbol id="pot" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M9 7q-1.2-2 0-3.5M12 7q-1.2-2 0-4.5M15 7q-1.2-2 0-3.5" fill="none"/><path d="M4 10h16v7c0 2-2 3.5-4 3.5H8c-2 0-4-1.5-4-3.5z" fill="#fff"/><path d="M15 10h5v7c0 2-2 3.5-4 3.5h-1z" fill="url(#h)"/><path d="M2.5 10h19M4 12H2M20 12h2"/><path d="M10 9q2-2 4 0" fill="none"/></g></symbol>
+<symbol id="carrot" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 21c2-5 8-12 11-14 2-1 4 1 3 3-2 3-9 9-14 11z" fill="#fff"/><path d="M17 10c-2 3-9 9-14 11 4-3 10-8 13-12z" fill="url(#h)"/><path d="M8 15l2 1M11 12l1.6 1M6 18l1.5.8" fill="none"/><path d="M15.5 6.5q0-4 3-5.5M16.5 7.5q3-3 6-2M15.5 6.5q-2-3-1-5" fill="none"/></g></symbol>
+<symbol id="cake" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 10v7c0 2.6 18 2.6 18 0v-7" fill="#fff"/><path d="M15 12.6c3-.5 6-1.4 6-2.6v7c0 1.3-3 2.1-6 2.4z" fill="url(#h)"/><ellipse cx="12" cy="10" rx="9" ry="3" fill="#fff"/><path d="M3 12.5q2 2 4 .5q2 2 4 .5q2 2 4 .5q2 2 4 .5l2-.5" fill="none"/></g></symbol>
+<symbol id="cup" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M9 6q-1-2 0-3.5M12 6q-1-2 0-4" fill="none"/><ellipse cx="11" cy="20" rx="9" ry="2.2" fill="url(#h)"/><path d="M4 9h14v4.5c0 3.5-3 5.5-7 5.5s-7-2-7-5.5z" fill="#fff"/><path d="M14 9h4v4.5c0 3-2 5-5 5.4 1.5-2 1.5-6 1-9.9z" fill="url(#h)"/><path d="M18 10.5c3 0 3 4.5-.5 4.5" fill="none"/><ellipse cx="11" cy="9" rx="7" ry="1.3" fill="url(#hx)"/></g></symbol>
+<symbol id="glass" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M14 1l-2 9" stroke-linecap="round"/><path d="M6 4h12l-1.5 18h-9z" fill="#fff"/><path d="M14 4h4l-1.5 18H13z" fill="url(#h)"/><rect x="8" y="10" width="3" height="3" transform="rotate(12 9.5 11.5)" fill="#fff"/><rect x="10" y="14" width="3" height="3" transform="rotate(-10 11.5 15.5)" fill="#fff"/><path d="M8 7q2-2 3 1q-2 1-3-1z" fill="url(#hx)"/><circle cx="18" cy="4.5" r="3" fill="#fff"/><path d="M18 1.5v6M15 4.5h6" fill="none"/></g></symbol>
+<symbol id="mint" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"><path d="M4 20Q4 6 18 4q0 14-14 16z" fill="#fff"/><path d="M4 20Q11 12 18 4q0 13-14 16z" fill="url(#h)"/><path d="M4 20L18 4M8 15l-1-4M11 12l-.5-4M8 15l4 1M11 12l4 1" fill="none"/></g></symbol>
+<symbol id="crown" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><circle cx="12" cy="12" r="9" fill="#fff"/><path d="M20.5 9c2 6-3 13-11 11.6 6-1 9.5-6 10.5-11.6z" fill="url(#h)"/><circle cx="12" cy="12" r="3.2" fill="url(#hx)"/><path d="M12 3v3M18.4 5.6l-2.1 2.1M21 12h-3M5.6 5.6l2.1 2.1M3 12h3M5.6 18.4l2.1-2.1M12 21v-3M18.4 18.4l-2.1-2.1" fill="none" stroke-linecap="round"/></g></symbol>
+<symbol id="scissors" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"><circle cx="6" cy="18" r="3" fill="url(#h)"/><circle cx="18" cy="18" r="3" fill="url(#h)"/><circle cx="6" cy="18" r="1.4" fill="#fff"/><circle cx="18" cy="18" r="1.4" fill="#fff"/><path d="M8 15.8L17 2M16 15.8L7 2" fill="none"/><circle cx="12" cy="9" r=".9" fill="#111"/></g></symbol>
+<symbol id="bottle" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M10 1.5h4v4c3 1 4 3 4 6v9.5a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V11.5c0-3 1-5 4-6z" fill="#fff"/><path d="M14 5.5c3 1 4 3 4 6V21a1 1 0 0 1-1 1h-3z" fill="url(#h)"/><rect x="7.5" y="12" width="9" height="6" fill="#fff"/><path d="M9 14.5h6M10 16h4" fill="none"/></g></symbol>
+<symbol id="bacon" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 11q2-4 4-1q2-4 4-1q2-4 4-1q2-4 4-1q2-3 2 1v8.5H3z" fill="#fff"/><path d="M3 13.5h18v2H3z" fill="url(#hx)"/><path d="M3 17.5h18v1H3z" fill="url(#h)"/><path d="M5 9.5l1 .5M9 8.5l1 .5M13 8.5l1 .5M17 7.5l1 .5" fill="none"/></g></symbol>
+<symbol id="tray" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M1.5 12h21l-2 7.5h-17z" fill="#fff"/><path d="M2 14.5h20l-1.4 5H3.4z" fill="url(#hx)"/><path d="M3.5 12q2.2-3.5 4.4 0M8 12q2.2-3.5 4.4 0M12.4 12q2.2-3.5 4.4 0M16.8 12q2.2-3.5 4.4 0" fill="#fff"/><path d="M5 10.5l.5.5M10 10l.5.5M14.5 10.5l.5.5" fill="none"/></g></symbol>
+<symbol id="spoon" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M11 12l10 10" stroke-width="3" stroke-linecap="round"/><path d="M11 12l10 10" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="7" cy="7.5" rx="4.5" ry="6" transform="rotate(-45 7 7.5)" fill="#fff"/><ellipse cx="8" cy="8.5" rx="2.5" ry="4" transform="rotate(-45 8 8.5)" fill="url(#h)"/></g></symbol>
+<symbol id="empanada" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M2 17C2 10 6.5 6 12 6s10 4 10 11z" fill="#fff"/><path d="M15 6.5c4.5 1.5 7 5 7 10.5h-4c0-4-1-8-3-10.5z" fill="url(#h)"/><path d="M2 17q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0q1.25 2 2.5 0" fill="#fff"/><circle cx="11" cy="11" r="1.1" fill="#111"/></g></symbol>
+<symbol id="avocado" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M12 2c-4 0-5 6-7 10-2 5 2 10 7 10s9-5 7-10c-2-4-3-10-7-10z" fill="url(#hx)"/><path d="M12 4.5c-3 0-4 5-5.5 8.5-1.5 4 1.5 7 5.5 7s7-3 5.5-7C16 9.5 15 4.5 12 4.5z" fill="#fff"/><circle cx="12" cy="14" r="3.2" fill="url(#h)"/></g></symbol>
+<symbol id="tomato" viewBox="0 0 24 24"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round"><circle cx="12" cy="13.5" r="8" fill="#fff"/><path d="M19 10c2 6-3 12-9 11 5-1.5 8-6 9-11z" fill="url(#h)"/><path d="M12 6l1.5-2.5L12 5l-2-1.5L11 6 8 6l3 1.2L12 9l1-1.8L16 6z" fill="url(#hx)"/></g></symbol>
+</g>
+
+<!-- ===== Detailed engraving-style drawings, one per recipe (viewBox 100) ===== -->
+<pattern id="k" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="2.4" stroke="#111" stroke-width=".45"/></pattern>
+<pattern id="kx" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)"><path d="M0 0V2.4M0 0H2.4" stroke="#111" stroke-width=".4"/></pattern>
+<pattern id="kd" patternUnits="userSpaceOnUse" width="1.5" height="1.5" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.5" stroke="#111" stroke-width=".55"/></pattern>
+<pattern id="st" patternUnits="userSpaceOnUse" width="6" height="6"><g fill="#111"><circle cx="1" cy="1" r=".35"/><circle cx="4" cy="2.4" r=".3"/><circle cx="2.2" cy="4.4" r=".35"/><circle cx="5.2" cy="5.1" r=".3"/></g></pattern>
+<pattern id="st2" patternUnits="userSpaceOnUse" width="3" height="3"><g fill="#111"><circle cx=".8" cy=".8" r=".4"/><circle cx="2.2" cy="2" r=".35"/></g></pattern>
+<pattern id="rice" patternUnits="userSpaceOnUse" width="6" height="5"><g fill="none" stroke="#111" stroke-width=".3"><ellipse cx="1.8" cy="1.2" rx="1.2" ry=".5"/><ellipse cx="4.6" cy="3.6" rx="1.2" ry=".5" transform="rotate(35 4.6 3.6)"/></g></pattern>
+
+<symbol id="mac"><g stroke="#111" stroke-width=".6" stroke-linejoin="round"><path d="M0 0H13V6H0Z" fill="#fff"/><path d="M0 4H13V6H0Z" fill="url(#k)" stroke="none"/><path d="M0 2H13M0 3.6H13" stroke-width=".3"/><ellipse cx="13" cy="3" rx="1.7" ry="3" fill="#fff"/><ellipse cx="13" cy="3" rx=".8" ry="1.6" fill="#111"/></g></symbol>
+<symbol id="trz"><g stroke="#111" stroke-width=".7" stroke-linejoin="round"><path d="M0 10C0 3 4 0 8 4C10-2 16-2 17 3C20-1 25 1 24 10Z" fill="#fff"/><g fill="#fff" stroke-width=".4"><circle cx="5" cy="6" r="1.2"/><circle cx="12" cy="3.5" r="1"/><circle cx="18.5" cy="5" r="1.3"/><circle cx="9" cy="8" r=".8"/></g><path d="M0 10H24V22H0Z" fill="#fff"/><path d="M0 15H24V18.5H0Z" fill="url(#kd)" stroke-width=".4"/><path d="M0 12.5H24M0 20.5H24" stroke-width=".35"/><path d="M24 10L29 6V18L24 22Z" fill="url(#k)"/></g></symbol>
+<symbol id="zboat"><g stroke="#111" stroke-width=".7" stroke-linejoin="round" stroke-linecap="round"><path d="M0 12Q2 2 42 0Q78 0 84 8Q82 18 42 20Q4 20 0 12Z" fill="url(#kx)"/><path d="M6 15Q24 19 46 18.5M16 17.5Q40 20 66 16" fill="none" stroke="#fff" stroke-width=".9"/><path d="M6 8Q8 3 42 2Q74 2 78 7Q74 12 42 13Q8 13 6 8Z" fill="#fff" stroke-width=".5"/><path d="M8 8Q12-4 42-5Q72-4 76 7Q42 12 8 8Z" fill="#fff"/><path d="M8 8Q12-4 42-5Q72-4 76 7Q42 12 8 8Z" fill="url(#st)" stroke="none"/><g fill="#fff" stroke-width=".35"><circle cx="24" cy="2" r="1.6"/><circle cx="50" cy="-1" r="2"/><circle cx="62" cy="3" r="1.3"/><circle cx="36" cy="-2" r="1"/></g><path d="M32 4q3-2 6 0q-3 2-6 0zM54 5q3-1.5 5 .5q-2.5 1.5-5-.5zM16 6q2-1.5 4 0q-2 1.5-4 0z" fill="url(#kx)" stroke-width=".3"/><path d="M84 8l7-2.5 1.5 4-7 2.5z" fill="url(#k)"/></g></symbol>
+<symbol id="cube"><g stroke="#111" stroke-width=".6" stroke-linejoin="round"><path d="M0 0l12-4 10 4-12 4z" fill="#fff"/><path d="M0 0l12-4 10 4-12 4z" fill="url(#st2)" stroke="none"/><path d="M0 0l10 4v9L0 9z" fill="#fff"/><path d="M0 0l10 4v9L0 9z" fill="url(#st)" stroke="none"/><path d="M10 4l12-4v9l-12 4z" fill="url(#k)"/><g fill="#fff" stroke-width=".3"><circle cx="8" cy="-1" r=".5"/><circle cx="14" cy="1" r=".5"/><circle cx="11" cy="-2.5" r=".4"/></g></g></symbol>
+
+<symbol id="H-sandwich" viewBox="0 0 100 100"><ellipse cx="50" cy="86" rx="46" ry="7" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M10 50L54 28L90 50Z" fill="#fff"/><path d="M10 50L54 28L90 50L83 50L54 32.5L17.5 50Z" fill="url(#k)" stroke-width=".7"/>
+<path d="M10 50H90V58Q50 60.5 10 58Z" fill="#fff"/>
+<path d="M10 58Q50 60.5 90 58Q93 65 90 72Q50 75 10 72Q7 65 10 58Z" fill="#fff"/><path d="M10 58Q50 60.5 90 58Q93 65 90 72Q50 75 10 72Q7 65 10 58Z" fill="url(#st)" stroke="none"/>
+<g fill="#fff" stroke-width=".8"><path d="M20 63q4-3 8 0q-2 4-8 0z"/><path d="M40 66q4-3 8 0q-2 4-8 0z"/><path d="M58 62q4-3 7 0q-2 3.5-7 0z"/><path d="M73 67q4-3 8 0q-2 4-8 0z"/><path d="M30 69q3-2 6 0q-1.5 3-6 0z"/></g>
+<path d="M10 72Q50 75 90 72V80Q50 82.5 10 80Z" fill="#fff"/>
+<path d="M80 50H90V58Q85 58.7 80 59ZM80 59Q86 58.6 90 58Q93 65 90 72Q85 72.8 80 73ZM80 73Q85 72.8 90 72V80Q85 80.8 80 81Z" fill="url(#k)" stroke="none"/>
+<g fill="#111" stroke="none"><circle cx="20" cy="54" r=".6"/><circle cx="34" cy="53" r=".5"/><circle cx="52" cy="55" r=".6"/><circle cx="66" cy="53" r=".5"/><circle cx="26" cy="77" r=".6"/><circle cx="46" cy="76.5" r=".5"/><circle cx="64" cy="77" r=".6"/></g></g></symbol>
+
+<symbol id="H-croquetas" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M3 70Q50 102 97 70Q50 92 3 70Z" fill="url(#k)" stroke="none"/><ellipse cx="50" cy="70" rx="47" ry="17" fill="#fff"/><ellipse cx="50" cy="69" rx="36" ry="11.5" fill="none" stroke-width=".7"/>
+<g transform="rotate(-10 34 64)"><rect x="15" y="56" width="38" height="17" rx="8.5" fill="#fff"/><rect x="15" y="56" width="38" height="17" rx="8.5" fill="url(#st)" stroke="none"/><path d="M17 68Q34 75 51 68Q50 73 44.5 73H23.5Q18 73 17 68Z" fill="url(#k)" stroke="none"/></g>
+<g transform="rotate(8 66 66)"><rect x="47" y="58" width="38" height="17" rx="8.5" fill="#fff"/><rect x="47" y="58" width="38" height="17" rx="8.5" fill="url(#st)" stroke="none"/><path d="M49 70Q66 77 83 70Q82 75 76.5 75H55.5Q50 75 49 70Z" fill="url(#k)" stroke="none"/></g>
+<g transform="rotate(-6 46 46)"><path d="M30 38H56V54H30A8 8 0 0 1 30 38Z" fill="#fff"/><path d="M30 38H56V54H30A8 8 0 0 1 30 38Z" fill="url(#st)" stroke="none"/><path d="M23 49Q40 55 56 51V54H30Q24.5 53 23 49Z" fill="url(#k)" stroke="none"/><ellipse cx="56" cy="46" rx="4.2" ry="8" fill="#fff"/><ellipse cx="56" cy="46" rx="2.9" ry="6.4" fill="#fff" stroke-width=".6"/><path d="M55 42.5q2 1 1 3M56.5 47.5q-1.5 1-.5 2.5" fill="none" stroke-width=".7"/><g fill="#111" stroke="none"><circle cx="55" cy="45" r=".4"/><circle cx="57" cy="49.5" r=".4"/></g></g></g></symbol>
+
+<symbol id="H-fondue" viewBox="0 0 100 100"><ellipse cx="50" cy="89" rx="44" ry="6" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M66 30C70 19 90 18 95 30C90 35 71 35 66 30Z" fill="#fff"/><path d="M67 31C76 35 89 35 94 31C89 37 72 37 67 31Z" fill="url(#k)" stroke="none"/><path d="M74 24q4-3 8-2M83 23q3 0 5 2" fill="none" stroke-width=".8"/>
+<path d="M10 68C10 50 28 40 50 40C72 40 90 50 90 68C90 81 72 87 50 87C28 87 10 81 10 68Z" fill="#fff"/>
+<path d="M70 43C84 49 90 58 90 68C90 79 78 85 63 86.5C76 79 79 58 70 43Z" fill="url(#k)" stroke="none"/>
+<path d="M22 62q6-6 13-4M26 74q8-5 15-2M58 76q8-3 13 0M15 70q3-3 6-2M70 64q5-3 9 0" fill="none" stroke-width=".8"/>
+<ellipse cx="50" cy="46" rx="29" ry="9.5" fill="#fff"/><ellipse cx="50" cy="46.5" rx="26" ry="7.5" fill="#fff" stroke-width=".8"/><ellipse cx="50" cy="46.5" rx="26" ry="7.5" fill="url(#st)" stroke="none"/>
+<path d="M28 52q-1 8 2 10q3-1 1.5-9M42 55q0 9 3 11q3-2 1-10.5M66 53q1 7 3 8q2.5-2 0-8" fill="#fff" stroke-width="1"/>
+<g fill="#fff" stroke-width=".7"><circle cx="40" cy="45" r="1.4"/><circle cx="58" cy="47" r="1"/><circle cx="50" cy="44" r=".8"/></g><path d="M36 47l2-1M46 49l2 .5M56 44l1.5 1M62 48l2-.5M44 43l1.5-.8" stroke-width=".9"/>
+<path d="M4 82l7-3 7 2.5-7 3z" fill="#fff"/><path d="M4 82v5l7 2.5v-5z" fill="#fff"/><path d="M11 84.5v5l7-2.5v-5z" fill="url(#k)"/></g></symbol>
+
+<symbol id="H-hojaldre" viewBox="0 0 100 100"><path d="M8 68L40 86L97 71L97 75L40 91L6 72Z" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 54L62 42L94 58L38 72Z" fill="#fff"/><path d="M6 54L38 72L38 80L6 62Z" fill="#fff"/><path d="M6 56.7L38 74.7M6 59.4L38 77.4" stroke-width=".6"/><path d="M38 72L94 58L94 66L38 80Z" fill="url(#k)"/><path d="M38 74.7L94 60.7M38 77.4L94 63.4" stroke-width=".6"/>
+<path d="M13 54L62 44.5L87 57.5L39 68.5Z" fill="none" stroke-width=".8"/>
+<g id="hj-eg"><ellipse cx="30" cy="56" rx="7" ry="4" fill="url(#kd)" stroke-width=".9"/><ellipse cx="30" cy="56" rx="5.6" ry="3" fill="#fff" stroke-width=".6"/><path d="M27.5 56h.1M30 55h.1M32.5 56.5h.1M29 57.5h.1M31.5 57.6h.1" stroke-width="1.8"/></g>
+<g transform="translate(30 -6)"><ellipse cx="30" cy="56" rx="7" ry="4" fill="url(#kd)" stroke-width=".9"/><ellipse cx="30" cy="56" rx="5.6" ry="3" fill="#fff" stroke-width=".6"/><path d="M27.5 56h.1M30 55h.1M32.5 56.5h.1M29 57.5h.1" stroke-width="1.8"/></g>
+<g transform="translate(38 4)"><ellipse cx="30" cy="56" rx="7" ry="4" fill="url(#kd)" stroke-width=".9"/><ellipse cx="30" cy="56" rx="5.6" ry="3" fill="#fff" stroke-width=".6"/><path d="M28 56h.1M31 55.5h.1M30 57.5h.1" stroke-width="1.8"/></g>
+<g stroke-width=".7"><ellipse cx="46" cy="61" rx="5.5" ry="3.2" fill="url(#kx)"/><ellipse cx="46" cy="61" rx="4.4" ry="2.5" fill="#fff"/><ellipse cx="46" cy="61" rx="2" ry="1.1" fill="none" stroke-width=".5"/>
+<ellipse cx="78" cy="56" rx="5.5" ry="3.2" fill="url(#kx)"/><ellipse cx="78" cy="56" rx="4.4" ry="2.5" fill="#fff"/><ellipse cx="78" cy="56" rx="2" ry="1.1" fill="none" stroke-width=".5"/>
+<ellipse cx="20" cy="57.5" rx="4.5" ry="2.6" fill="url(#kx)"/><ellipse cx="20" cy="57.5" rx="3.5" ry="2" fill="#fff"/></g>
+<path d="M44 50q4-5 8 0h-2.5v3h-3v-3zM54 64q4-5 8 0h-2.5v3h-3v-3z" fill="#fff" stroke-width=".8"/><path d="M45.5 49.5q2.5-2.5 5 0M55.5 63.5q2.5-2.5 5 0" fill="none" stroke-width=".5"/>
+<path d="M33 63q6-3 11-1l-.5 1.6q-5-1.6-10 1zM62 52q6-3 11-1l-.5 1.6q-5-1.6-10 1z" fill="url(#kx)" stroke-width=".7"/>
+<path d="M20 64q10-4 20-3l2-1.2v2.6l-2-1q-10 .4-20 3zM52 58q10-4 20-3l2-1.2v2.6l-2-1q-10 .4-20 3z" fill="url(#kd)" stroke-width=".7"/>
+<circle cx="40" cy="53.5" r="3" fill="#fff" stroke-width=".8"/><circle cx="40" cy="53.5" r="3" fill="url(#st)" stroke="none"/><circle cx="70" cy="64" r="3" fill="#fff" stroke-width=".8"/><circle cx="70" cy="64" r="3" fill="url(#st)" stroke="none"/></g></symbol>
+
+<symbol id="H-torreznos" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M5 72Q5 90 50 91Q95 90 95 72Q95 84 50 86Q5 84 5 72Z" fill="url(#k)"/><ellipse cx="50" cy="72" rx="45" ry="14" fill="#fff"/><ellipse cx="50" cy="71" rx="38" ry="10" fill="none" stroke-width=".7"/>
+<ellipse cx="52" cy="78" rx="30" ry="5" fill="url(#k)" stroke="none"/>
+<use href="#trz" transform="translate(46 44) scale(1.1)"/><use href="#trz" transform="translate(18 48) scale(1.1)"/><use href="#trz" transform="translate(32 58) scale(1.15)"/></g></symbol>
+
+<symbol id="H-futbol" viewBox="0 0 100 100"><ellipse cx="46" cy="88" rx="40" ry="5" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 48Q8 84 46 86Q84 84 86 48Z" fill="#fff"/><path d="M70 50Q84 50 86 48Q84 78 54 85.5Q76 74 70 50Z" fill="url(#k)" stroke="none"/><path d="M8 58Q46 70 84 58M9 62.5Q46 74.5 83 62.5" fill="none" stroke-width=".7"/>
+<ellipse cx="46" cy="48" rx="40" ry="10" fill="#fff"/><ellipse cx="46" cy="48" rx="37" ry="8" fill="none" stroke-width=".6"/>
+<path d="M10 48Q18 33 46 31Q74 33 82 48Q46 57 10 48Z" fill="#fff"/><path d="M10 48Q18 33 46 31Q74 33 82 48Q46 57 10 48Z" fill="url(#rice)" stroke="none"/>
+<g fill="#fff" stroke-width=".8"><path d="M18 44q7-4 14 0l-1 2.6q-6-3.2-12 0z"/><path d="M36 38q7-4 14 0l-1 2.6q-6-3.2-12 0z"/><path d="M52 46q7-4 14 0l-1 2.6q-6-3.2-12 0z"/><path d="M60 37q6-3 12 0l-1 2.4q-5-2.8-10 0z"/></g>
+<g stroke-width=".8"><ellipse cx="28" cy="38" rx="3.8" ry="2.8" fill="url(#kd)"/><ellipse cx="56" cy="42" rx="3.8" ry="2.8" fill="url(#kd)"/><ellipse cx="72" cy="45" rx="3.6" ry="2.6" fill="url(#kd)"/><ellipse cx="40" cy="46" rx="3.8" ry="2.8" fill="url(#kd)"/><ellipse cx="66" cy="35" rx="3.4" ry="2.5" fill="url(#kd)"/></g>
+<g fill="#fff" stroke="none"><ellipse cx="27" cy="37.2" rx="1" ry=".6"/><ellipse cx="55" cy="41.2" rx="1" ry=".6"/><ellipse cx="71" cy="44.2" rx="1" ry=".6"/><ellipse cx="39" cy="45.2" rx="1" ry=".6"/><ellipse cx="65" cy="34.3" rx=".9" ry=".5"/></g>
+<path d="M44 35l3-1.5 2 2-1.5 2-3-.5zM22 47l3-1 1.5 2-2 1.5-2.5-1zM74 40l2.5-1.5 2 1.5-1 2-3-.4z" fill="url(#k)" stroke-width=".7"/>
+<circle cx="84" cy="80" r="12" fill="#fff"/><path d="M92 72c5 7 2 18-8 20 7-4 10-12 8-20z" fill="url(#k)" stroke="none"/><path d="M84 75.5l4.3 3.1-1.6 5h-5.4l-1.6-5z" fill="#111"/><path d="M84 75.5V68M88.3 78.6l7.4-2.4M86.7 83.6l4.4 6.2M81.3 83.6l-4.4 6.2M79.7 78.6l-7.4-2.4" fill="none" stroke-width=".9"/></g></symbol>
+
+<symbol id="H-pasta" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M3 68Q50 100 97 68Q50 90 3 68Z" fill="url(#k)" stroke="none"/><ellipse cx="50" cy="68" rx="47" ry="18" fill="#fff"/><ellipse cx="50" cy="67" rx="35" ry="12" fill="none" stroke-width=".7"/>
+<path d="M30 40q-3-5 0-9q3-4 0-8M46 36q-3-5 0-9q3-4 0-8M62 40q-3-5 0-9q3-4 0-8" fill="none" stroke-width=".8"/>
+<use href="#mac" transform="translate(22 60) rotate(-15)"/><use href="#mac" transform="translate(56 64) rotate(10)"/><use href="#mac" transform="translate(36 66) rotate(25)"/><use href="#mac" transform="translate(64 56) rotate(-30)"/><use href="#mac" transform="translate(30 52) rotate(5)"/><use href="#mac" transform="translate(46 50) rotate(-20)"/><use href="#mac" transform="translate(52 56) rotate(40)"/><use href="#mac" transform="translate(18 66) rotate(-50)"/><use href="#mac" transform="translate(38 44) rotate(15)"/><use href="#mac" transform="translate(62 46) rotate(-5)"/>
+<g stroke-width=".8"><ellipse cx="34" cy="62" rx="3.4" ry="2.5" fill="url(#kd)"/><ellipse cx="60" cy="60" rx="3.4" ry="2.5" fill="url(#kd)"/><ellipse cx="46" cy="60" rx="3.2" ry="2.4" fill="url(#kd)"/><ellipse cx="72" cy="66" rx="3.2" ry="2.4" fill="url(#kd)"/></g>
+<path d="M50 70l3-1.5 2 2-1.5 2-3-.5zM28 56l3-1 1.5 2-2 1.5-2.5-1z" fill="url(#k)" stroke-width=".7"/></g></symbol>
+
+<symbol id="H-tortilla" viewBox="0 0 100 100"><ellipse cx="46" cy="88" rx="40" ry="5" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M80 52L98 42Q100 44 99 46L82 57Z" fill="url(#kd)"/>
+<path d="M4 58Q4 84 44 86Q84 84 84 58Q84 77 44 79Q4 77 4 58Z" fill="url(#kd)"/>
+<ellipse cx="44" cy="58" rx="40" ry="21" fill="#fff"/><ellipse cx="44" cy="58.5" rx="35" ry="17" fill="url(#k)" stroke-width=".8"/>
+<path d="M16 60Q14 50 30 47Q44 44 58 47Q74 50 72 60Q72 69 44 71Q16 69 16 60Z" fill="#fff"/><path d="M16 60Q14 50 30 47Q44 44 58 47Q74 50 72 60Q72 69 44 71Q16 69 16 60Z" fill="url(#st)" stroke="none"/>
+<path d="M28 55q3-2 5 0q-2 2-5 0zM48 52q4-2 6 1q-3 2-6-1zM56 62q3-1 4 1q-2 1.5-4-1zM34 64q3-1 5 1q-2 1-5-1zM62 54q2-1 3.5.5q-2 1-3.5-.5z" fill="url(#kx)" stroke-width=".5"/>
+<path d="M34 40q-4-6 0-11q4-5 0-10M46 38q-4-6 0-11q4-5 0-10M58 40q-4-6 0-11q4-5 0-10" fill="none" stroke-width=".9"/></g></symbol>
+
+<symbol id="H-chile" viewBox="0 0 100 100"><ellipse cx="50" cy="90" rx="42" ry="5" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M36 36q-4-6 0-11q4-5 0-10M50 34q-4-6 0-11q4-5 0-10M64 36q-4-6 0-11q4-5 0-10" fill="none" stroke-width=".9"/>
+<path d="M10 50q-8 0-8 5q0 4 8 3" fill="#fff"/><path d="M90 50q8 0 8 5q0 4-8 3" fill="url(#k)"/>
+<path d="M10 46Q8 82 50 86Q92 82 90 46Z" fill="#fff"/><path d="M72 48Q88 48 90 46Q92 78 58 85.5Q80 72 72 48Z" fill="url(#k)" stroke="none"/><path d="M12 58Q50 70 88 58" fill="none" stroke-width=".7"/>
+<ellipse cx="50" cy="46" rx="40" ry="10" fill="#fff"/><ellipse cx="50" cy="46.5" rx="35" ry="7.5" fill="url(#st2)" stroke-width=".8"/>
+<g fill="url(#kd)" stroke-width=".7"><path d="M24 45q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/><path d="M40 42q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/><path d="M56 48q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/><path d="M66 43q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/><path d="M32 49q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/><path d="M48 46q3-3 6 0q-.5 2.2-3 1.3q-2.5 1-3-1.3z"/></g>
+<g fill="#fff" stroke-width=".6"><path d="M34 44l2.5-1.5 2 1.5-1 2-2.8.2z"/><path d="M60 45l2.5-1.5 2 1.5-1 2-2.8.2z"/><path d="M44 50l2.5-1.5 2 1.5-1 2-2.8.2z"/><path d="M72 47l2.5-1.5 2 1.5-1 2-2.8.2z"/></g>
+<path d="M56 92Q76 96 94 82Q78 89 58 87Z" fill="url(#kx)"/><path d="M58 87q-3 1.5-2 5" fill="none"/><path d="M57 89q-4-1-5-4" fill="none"/></g></symbol>
+
+<symbol id="H-calabacin" viewBox="0 0 100 100"><ellipse cx="50" cy="86" rx="46" ry="6" fill="url(#k)"/><use href="#zboat" transform="translate(12 42) scale(.88)"/><use href="#zboat" transform="translate(3 64)"/></symbol>
+
+<symbol id="H-empanada" viewBox="0 0 100 100"><path d="M6 64L44 82L98 66L98 70L44 88L4 68Z" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M6 50L60 38L96 52L42 66Z" fill="#fff"/><path d="M6 50L42 66L42 74L6 58Z" fill="#fff"/><path d="M42 66L96 52L96 60L42 74Z" fill="url(#k)"/>
+<path d="M9.5 50L60 39.6L92.5 52L42 63.8Z" fill="none" stroke-width="5" stroke-linecap="butt" stroke-dasharray="1.2 3.2"/>
+<path d="M14 50L60 41.5L88 52L42 61.5Z" fill="none" stroke-width=".8"/><ellipse cx="50" cy="51.5" rx="3" ry="1.6" fill="#111"/>
+<path d="M24 51q12-5 24-6M54 58q10-2 18-6M30 55q6-2 10-2" fill="none" stroke-width=".6"/>
+<path d="M2 78L24 73L32 78L10 83Z" fill="#fff"/><path d="M10 83L32 78L32 86L10 91Z" fill="#fff"/><path d="M10 85L32 80L32 84L10 89Z" fill="url(#st)" stroke="none"/><path d="M10 85L32 80M10 89L32 84" stroke-width=".6"/>
+<path d="M16 86.5q2-1.5 4 0q-2 1.5-4 0z" fill="#fff" stroke-width=".5"/><circle cx="25" cy="83" r="1.1" fill="url(#kd)" stroke-width=".5"/><path d="M2 78L10 83L10 91L2 86Z" fill="url(#k)"/></g></symbol>
+
+<symbol id="H-canelones" viewBox="0 0 100 100"><ellipse cx="50" cy="84" rx="48" ry="6" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M8 46q-7 3-4 8l5-1zM92 46q7 3 4 8l-5-1z" fill="#fff"/>
+<path d="M6 56L94 56L90 76L10 76Z" fill="#fff"/><path d="M66 56H94L90 76H62Z" fill="url(#k)" stroke="none"/><path d="M8 66H92" stroke-width=".6"/>
+<path d="M14 38L86 38L94 56L6 56Z" fill="#fff"/><path d="M18 41L82 41L88 53L12 53Z" fill="#fff" stroke-width=".8"/><path d="M18 41L82 41L88 53L12 53Z" fill="url(#st)" stroke="none"/>
+<path d="M18.3 49L23 42M30.9 49L33.5 42M43.5 49L44 42M56.1 49L54.5 42M68.7 49L65 42M81.3 49L75.5 42" stroke-width=".6"/>
+<path d="M12 53a6.3 4 0 0 1 12.6 0a6.3 4 0 0 1 12.6 0a6.3 4 0 0 1 12.6 0a6.3 4 0 0 1 12.6 0a6.3 4 0 0 1 12.6 0a6.3 4 0 0 1 12.6 0" fill="#fff" stroke-width=".9"/>
+<path d="M28 46q3-1.5 5 0q-2.5 1.5-5 0zM48 44q3-1.5 5 .5q-3 1.5-5-.5zM62 47q3-1 4 1q-2.5 1-4-1zM38 50q2-1 4 0q-2 1-4 0zM72 44q2.5-1 4 .5q-2 1-4-.5z" fill="url(#kx)" stroke-width=".5"/></g></symbol>
+
+<symbol id="H-zanahoria" viewBox="0 0 100 100"><ellipse cx="54" cy="80" rx="44" ry="7" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M16 40V64A36 11 0 0 0 88 64V40" fill="#fff"/><path d="M70 50Q88 46 88 40V64Q88 71 66 74.5Q75 66 70 50Z" fill="url(#k)" stroke="none"/>
+<ellipse cx="52" cy="40" rx="36" ry="11" fill="#fff"/><ellipse cx="52" cy="40" rx="36" ry="11" fill="url(#st)" stroke="none"/><path d="M28 39q10 3 20 0q10 4 22 1" fill="none" stroke-width=".9"/>
+<path d="M6 72L36 72L40 69L10 69Z" fill="url(#k)"/><path d="M6 72H36V90H6Z" fill="#fff"/><path d="M6 72H36V90H6Z" fill="url(#st)" stroke="none"/>
+<path d="M10 76l2 .6M18 80l1.6-.8M26 75l2 .4M14 86l2-.4M30 84l1.6.8M22 88l1.8-.4M12 81l1.5.5M28 79l1.8-.2" stroke-width="1.3"/><path d="M36 72L40 69V87L36 90Z" fill="url(#kx)"/>
+<g transform="translate(64 84) rotate(-15)"><path d="M0 0Q2-4 6-4L32 1L6 5Q2 5 0 0Z" fill="#fff"/><path d="M2 2Q4 5 6 5L32 1L6 3Z" fill="url(#k)" stroke="none"/><path d="M11-3.3l.4 7M18-2l.3 4.8M25-.6l.2 3" stroke-width=".6"/><path d="M0 0q-6-6-8-12M0 0q-7-2-12-6M0 0q-3-8-2-14" fill="none" stroke-width=".9"/><path d="M-8-12q-3-1-3-4q3 1 3 4zM-12-6q-3 0-4-3q3 0 4 3zM-2-14q-2-2-1-5q2 2 1 5z" fill="url(#k)" stroke-width=".6"/></g></g></symbol>
+
+<symbol id="H-tiramisu" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M3 76Q50 104 97 76Q50 96 3 76Z" fill="url(#k)" stroke="none"/><ellipse cx="50" cy="76" rx="47" ry="14" fill="#fff"/><ellipse cx="50" cy="75" rx="37" ry="9.5" fill="none" stroke-width=".7"/>
+<path d="M22 40L56 32L80 40L46 48Z" fill="#fff"/><path d="M22 40L56 32L80 40L46 48Z" fill="url(#st2)" stroke="none"/>
+<g stroke-width=".8"><path d="M22 40L46 48L46 50L22 42Z" fill="url(#kd)"/><path d="M22 42L46 50L46 58L22 50Z" fill="#fff"/><path d="M22 50L46 58L46 66L22 58Z" fill="url(#kx)"/><path d="M22 58L46 66L46 74L22 66Z" fill="#fff"/><path d="M22 66L46 74L46 80L22 72Z" fill="url(#kx)"/>
+<path d="M46 48L80 40L80 42L46 50Z" fill="url(#kd)"/><path d="M46 50L80 42L80 50L46 58Z" fill="#fff"/><path d="M46 58L80 50L80 58L46 66Z" fill="url(#kx)"/><path d="M46 66L80 58L80 66L46 74Z" fill="#fff"/><path d="M46 74L80 66L80 72L46 80Z" fill="url(#kx)"/></g>
+<path d="M46 48L80 40L80 72L46 80Z" fill="url(#k)" stroke="none"/><path d="M22 40L46 48L80 40M46 48V80" fill="none"/>
+<ellipse cx="22" cy="88" rx="7" ry="3.5" fill="#fff"/><ellipse cx="22" cy="88" rx="4.5" ry="2" fill="url(#k)" stroke="none"/><path d="M29 88.5L66 92" stroke-width="2.4"/>
+<g transform="translate(86 74) rotate(30)"><ellipse rx="3" ry="2" fill="url(#kd)" stroke-width=".8"/><path d="M-2.6 0q2.6-.8 5.2 0" stroke="#fff" stroke-width=".9"/></g><g transform="translate(80 82) rotate(-20)"><ellipse rx="3" ry="2" fill="url(#kd)" stroke-width=".8"/><path d="M-2.6 0q2.6-.8 5.2 0" stroke="#fff" stroke-width=".9"/></g></g></symbol>
+
+<symbol id="H-lechefrita" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M3 70Q50 100 97 70Q50 90 3 70Z" fill="url(#k)" stroke="none"/><ellipse cx="50" cy="70" rx="47" ry="17" fill="#fff"/><ellipse cx="50" cy="69" rx="36" ry="11.5" fill="none" stroke-width=".7"/>
+<use href="#cube" transform="translate(20 58) scale(1.3)"/><use href="#cube" transform="translate(48 54) scale(1.3)"/><use href="#cube" transform="translate(30 70) scale(1.3)"/><use href="#cube" transform="translate(58 68) scale(1.3)"/>
+<g transform="translate(64 44) rotate(-20)"><rect x="0" y="0" width="28" height="5" fill="url(#k)" stroke-width="1"/><path d="M0 1.6H28" stroke-width=".5"/><ellipse cx="28" cy="2.5" rx="1.6" ry="2.5" fill="#fff" stroke-width=".8"/><path d="M28.6 2.5a.7 1.1 0 1 1-1.2-.4" fill="none" stroke-width=".6"/></g>
+<g fill="#111" stroke="none"><circle cx="16" cy="74" r=".5"/><circle cx="84" cy="70" r=".5"/><circle cx="72" cy="80" r=".5"/><circle cx="24" cy="80" r=".4"/><circle cx="80" cy="76" r=".4"/></g></g></symbol>
+
+<symbol id="H-mojito" viewBox="0 0 100 100"><ellipse cx="50" cy="93" rx="26" ry="4" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M58 2L62 3L54 76L50 75Z" fill="url(#kx)" stroke-width="1"/>
+<path d="M44 14q-6-8-2-14q5 6 2 14zM50 13q2-9 9-11q-1 8-9 11z" fill="#fff" stroke-width=".9"/><path d="M44 14q-3-6-2-13M50 13q4-6 9-11" fill="none" stroke-width=".5"/>
+<path d="M24 12L76 12L69 90Q50 94 31 90Z" fill="#fff"/>
+<path d="M26 22Q50 25 74 22" fill="none" stroke-width=".7"/>
+<g stroke-width=".9"><g transform="translate(32 27) rotate(12)"><rect width="12" height="11" rx="2.5" fill="#fff"/><path d="M2.5 3v4M4 2.5h4" stroke-width=".6"/></g><g transform="translate(51 30) rotate(-10)"><rect width="12" height="11" rx="2.5" fill="#fff"/><path d="M2.5 3v4M4 2.5h4" stroke-width=".6"/></g><g transform="translate(40 47) rotate(20)"><rect width="12" height="11" rx="2.5" fill="#fff"/><path d="M2.5 3v4M4 2.5h4" stroke-width=".6"/></g><g transform="translate(54 58) rotate(-6)"><rect width="11" height="10" rx="2.5" fill="#fff"/><path d="M2.5 3v4M4 2.5h4" stroke-width=".6"/></g><g transform="translate(35 66) rotate(8)"><rect width="11" height="10" rx="2.5" fill="#fff"/><path d="M2.5 3v4M4 2.5h4" stroke-width=".6"/></g></g>
+<g stroke-width=".8"><path d="M29 46Q35 40 43 43Q37 49 29 46Z" fill="url(#k)"/><path d="M50 44Q56 38 64 41Q58 47 50 44Z" fill="url(#k)"/><path d="M50 74Q56 68 64 71Q58 77 50 74Z" fill="url(#k)"/><path d="M34 82Q40 76 48 79Q42 85 34 82Z" fill="url(#k)"/><path d="M58 52Q63 50 66 54Q61 56 58 52Z" fill="url(#k)"/></g>
+<path d="M29 46Q36 44 43 43M50 44Q57 42 64 41M50 74Q57 72 64 71M34 82Q41 80 48 79" fill="none" stroke="#fff" stroke-width=".7"/>
+<g stroke-width=".8"><path d="M38 60a6 6 0 0 1 12 0Z" fill="#fff"/><path d="M44 60l-4-3.5M44 60V55M44 60l4-3.5" stroke-width=".5"/><path d="M58 47a5 5 0 0 1 10 0Z" fill="#fff"/><path d="M63 47l-3.4-3M63 47V43M63 47l3.4-3" stroke-width=".5"/></g>
+<g fill="#fff" stroke-width=".5"><circle cx="46" cy="38" r="1"/><circle cx="62" cy="68" r=".9"/><circle cx="44" cy="76" r="1.1"/><circle cx="56" cy="84" r=".8"/></g>
+<path d="M68 12L76 12L69 90L63 90Z" fill="url(#k)" stroke="none"/><path d="M29 18L34 84" stroke-width=".6"/>
+<path d="M31 90Q50 94 69 90L68.5 85Q50 89 31.5 85Z" fill="url(#kx)" stroke-width=".8"/>
+<path d="M24 12L76 12L69 90Q50 94 31 90Z" fill="none"/>
+<g transform="translate(74 13)"><circle r="10" fill="#fff"/><circle r="8" fill="none" stroke-width=".6"/><path d="M0 0V-8M0 0L7.6-2.5M0 0L4.7 6.5M0 0L-4.7 6.5M0 0L-7.6-2.5" stroke-width=".6"/><path d="M10 0A10 10 0 0 1 0 10" fill="none" stroke-width="2.5"/></g></g></symbol>
+</defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="wav" viewBox="0 0 100 100"><g fill="none" stroke="#111" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+<path d="M7 78q-3-4 0-8t0-8 0-8 0-8 0-8 0-8 0-8 0-8"/><path d="M7 14c-5-1-6-7-1-8 4-1 5 4 1 5"/><path d="M7 14c1-5 7-6 8-1 1 4-4 5-5 1"/>
+<path d="M15 7q4-3 8 0t8 0 8 0 8 0 8 0 8 0 8 0 8 0"/><path d="M4 84q3 3 3 0M84 4q3 3 0 3" /></g></symbol>
+<g id="dlib" fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+<symbol id="d-whisk" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><path d="M12 23V14M12 14c-5-2-5-12 0-12s5 10 0 12M12 14c-2.5-2-2.5-12 0-12M12 14c2.5-2 2.5-12 0-12"/><path d="M10.5 16h3v6h-3z"/></g></symbol>
+<symbol id="d-heart" viewBox="0 0 24 24"><path d="M12 20C4 14 3 8 7 6c2.5-1.2 4.5.5 5 2.5.5-2 2.5-3.7 5-2.5 4 2 3 8-5 14z" fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></symbol>
+<symbol id="d-spark" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.1" stroke-linejoin="round"><path d="M10 3C11 9 12 10 17 11 12 12 11 13 10 19 9 13 8 12 3 11 8 10 9 9 10 3Z"/><path d="M19 15c.4 2 .8 2.4 2.5 2.8-1.7.4-2.1.8-2.5 2.8-.4-2-.8-2.4-2.5-2.8 1.7-.4 2.1-.8 2.5-2.8Z"/></g></symbol>
+<symbol id="d-fork" viewBox="0 0 24 24"><path d="M8 2v6c0 2 1.5 3 4 3s4-1 4-3V2M12 2v6M12 11v11" fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"/></symbol>
+<symbol id="d-spoon" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><ellipse cx="12" cy="6.5" rx="3.6" ry="4.6"/><path d="M12 11v11"/></g></symbol>
+<symbol id="d-mitt" viewBox="0 0 24 24"><path d="M7 19V10c0-4 2.5-7 5.5-7S18 6 18 9v3l2-2c1.5-1 3 .5 2 2l-4.5 5.5V19zM6 19.5h12.5v2.5H6z" fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></symbol>
+<symbol id="d-ladle" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><path d="M17 2l-3 12"/><path d="M6 14a6.5 5 0 0 0 13 0z"/><g fill="#111" stroke="none"><circle cx="10" cy="16" r=".7"/><circle cx="13" cy="17" r=".7"/><circle cx="15.5" cy="15.5" r=".7"/></g></g></symbol>
+<symbol id="d-salt" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M8 22h8l-1-12H9z"/><path d="M9 10q3-7 6 0"/><path d="M11 17q1-1 2 0t0 2" stroke-linecap="round"/></g></symbol>
+<symbol id="d-cup" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><path d="M5 9h12v4a6 6 0 0 1-12 0z"/><path d="M17 10c3 0 3 4 0 4M3 21h16M9 6q-1-2 0-4M13 6q-1-2 0-4"/></g></symbol>
+<symbol id="d-pot" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M2.5 10h19M10 7.5h4M2 13h2M20 13h2"/></g></symbol>
+<symbol id="d-leaf" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21C7 13 12 7 21 3"/><path d="M8 15c-3-.5-4.5-3-4-5.5 3 .3 4.3 2.8 4 5.5zM12 10.5c-1.8-2-1.8-5 .2-7 1.8 2 1.8 5-.2 7zM15 8.5c2-2 5-2 7-.3-2 2-5 2-7 .3zM10 13c2.6-.6 5 .6 6 3-2.6.6-5-.6-6-3z"/></g></symbol>
+<symbol id="d-bowl" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><path d="M3 11h18a9 8 0 0 1-18 0z"/><path d="M5 14q7 3 14 0M10 8c-1-1-1-2 0-3 1 1 1 2 0 3M14 8c-1-1-1-2 0-3 1 1 1 2 0 3"/></g></symbol>
+<symbol id="d-bottle" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M10 2h4v4l2 3v13H8V9l2-3z"/><path d="M8 12h8v6H8"/></g></symbol>
+<symbol id="d-cheese" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M3 17v-6l15-6 3 6v6z"/><path d="M3 11h18"/><circle cx="8" cy="14" r="1.3"/><circle cx="15" cy="8.5" r="1"/><circle cx="16" cy="14.5" r=".8"/></g></symbol>
+<symbol id="d-bread" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15c0-6 4-9 9-9s9 3 9 9c0 2-1 3-3 3H6c-2 0-3-1-3-3z"/><path d="M8 9l2 3M12 8l2 3M16 9.5l1.5 2.5"/></g></symbol>
+<symbol id="d-tray" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linejoin="round"><path d="M2 11h20l-2 8H4z"/><path d="M4 11q2-3 4 0 2-3 4 0 2-3 4 0 2-3 4 0M1 12.5h1.5M21.5 12.5H23"/></g></symbol>
+<symbol id="d-rolling" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><rect x="6" y="9" width="12" height="6" rx="2" transform="rotate(-30 12 12)"/><path d="M4.5 16.8l-3 1.7M19.5 7.2l3-1.7"/></g></symbol>
+<symbol id="d-arrow" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5c8 0 14 4 16 13"/><path d="M15 15l4 3.5 2.5-4.5"/></g></symbol>
+</g>
+<symbol id="ribbonb" viewBox="0 0 200 40"><g stroke="#111" stroke-width="1.2" stroke-linejoin="round">
+<path d="M22 12H2L9 21 2 30H22Z" fill="#d9c094"/><path d="M178 12H198L191 21 198 30H178Z" fill="#d9c094"/>
+<path d="M14 6H186V34H14Z" fill="#e8d5ae"/><path d="M14 34L22 30V34ZM186 34L178 30V34Z" fill="#111"/></g></symbol>
+<symbol id="scrib" viewBox="0 0 100 8"><path d="M2 5Q10 1 18 5T34 5 50 5 66 5 82 5 98 4" fill="none" stroke="#111" stroke-width="1.4" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="H-cangrejos" viewBox="0 0 100 100"><ellipse cx="52" cy="84" rx="44" ry="6" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 50Q10 36 3 22M24 54Q10 68 4 82" fill="none" stroke-width="1"/>
+<path d="M36 44L26 32M36 60L26 72" stroke-width="3.5"/><path d="M36 44L26 32M36 60L26 72" stroke="#fff" stroke-width="1.6"/>
+<path d="M27 33C20 22 8 20 6 28C10 24 18 26 20 30C14 30 10 34 12 38C18 38 24 36 27 33Z" fill="url(#kx)"/>
+<path d="M27 71C20 82 8 84 6 76C10 80 18 78 20 74C14 74 10 70 12 66C18 66 24 68 27 71Z" fill="url(#kx)"/>
+<path d="M44 44l-4-9M50 43l-1-10M56 44l3-9M44 61l-4 9M50 62l-1 10M56 61l3 9" fill="none" stroke-width="1.1"/>
+<path d="M60 46h8v13h-8zM68 47h7v11h-7zM75 48h6v9h-6zM81 49h5v7h-5z" fill="#fff"/>
+<path d="M60 54h8v5h-8zM68 54h7v4h-7zM75 54h6v3h-6zM81 54h5v2h-5z" fill="url(#k)" stroke="none"/>
+<path d="M86 49l10-6-2 9 2 9-10-5z" fill="#fff"/><path d="M86 52.5l10-1M86 52.5l9 6M86 52.5l9-7" fill="none" stroke-width=".7"/>
+<ellipse cx="46" cy="52" rx="16" ry="10" fill="#fff"/><path d="M30 53Q46 64 62 53Q60 61 46 62Q32 61 30 53Z" fill="url(#k)" stroke="none"/>
+<path d="M38 46q8-3 16 0M38 58q8 3 16 0" fill="none" stroke-width=".7"/>
+<path d="M30 50L21 52L30 54" fill="#fff"/><circle cx="31" cy="48" r="1.4" fill="#111"/><circle cx="31" cy="56" r="1.4" fill="#111"/></g></symbol>
+<symbol id="H-churros" viewBox="0 0 100 100"><ellipse cx="52" cy="88" rx="46" ry="6" fill="url(#k)"/><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<ellipse cx="32" cy="80" rx="28" ry="7" fill="#fff"/><ellipse cx="32" cy="79" rx="18" ry="4" fill="none" stroke-width=".7"/>
+<path d="M52 56c9 0 9 12-2 12" fill="none" stroke-width="2"/>
+<path d="M12 52h40v14a20 12 0 0 1-40 0z" fill="#fff"/><path d="M40 53h12v13c0 6-5 10-12 11.5 3-6 2-18 0-24.5z" fill="url(#k)" stroke="none"/>
+<ellipse cx="32" cy="52" rx="20" ry="5" fill="url(#kd)"/>
+<g transform="translate(22 30) rotate(12)"><rect width="6" height="26" rx="3" fill="#fff"/><path d="M1.5 2v22M3 2v22M4.5 2v22" stroke-width=".4"/></g>
+<path d="M24 46q-3-4 0-8M34 44q-3-4 0-8" fill="none" stroke-width=".9"/>
+<g transform="translate(56 76) rotate(-22)"><rect width="40" height="8" rx="4" fill="#fff"/><path d="M2 2.2h36M2 4h36M2 5.8h36" stroke-width=".4"/><rect y="5" width="40" height="3" rx="1.5" fill="url(#k)" stroke="none"/></g>
+<g transform="translate(58 66) rotate(-30)"><rect width="36" height="6" rx="3" fill="#fff"/><path d="M2 1.5h32M2 3h32M2 4.5h32" stroke-width=".4"/></g>
+<g transform="translate(62 84) rotate(-12)"><rect width="34" height="6" rx="3" fill="#fff"/><path d="M2 1.5h30M2 3h30M2 4.5h30" stroke-width=".4"/></g>
+<g fill="#111" stroke="none"><circle cx="70" cy="60" r=".6"/><circle cx="80" cy="56" r=".6"/><circle cx="88" cy="70" r=".6"/><circle cx="76" cy="78" r=".6"/><circle cx="92" cy="80" r=".6"/></g></g></symbol>
+<symbol id="H-morros" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+<path d="M5 70Q5 88 50 89Q95 88 95 70Q95 82 50 84Q5 82 5 70Z" fill="url(#k)"/><ellipse cx="50" cy="70" rx="45" ry="14" fill="#fff"/><ellipse cx="50" cy="69" rx="38" ry="10" fill="none" stroke-width=".7"/>
+<path d="M44 46l-6-20M60 48l8-22" stroke-width="1"/>
+<g fill="#fff"><path d="M22 66q4-10 14-6q6 4 0 9q-8 4-14-3z"/><path d="M36 58q6-9 15-4q5 5-2 9q-9 3-13-5z"/><path d="M52 62q5-10 15-5q5 6-2 9q-9 3-13-4z"/><path d="M64 70q5-8 13-4q4 5-2 8q-7 2-11-4z"/><path d="M40 70q5-7 13-3q4 5-3 7q-7 2-10-4z"/></g>
+<g fill="url(#k)" stroke="none"><path d="M23 68q6 5 13 1l-1 2q-7 3-12-3z"/><path d="M37 60q6 6 14 3l-2 1.5q-8 2.5-12-4.5z"/><path d="M53 64q6 5 14 2l-2 1.5q-8 2.5-12-3.5z"/></g>
+<path d="M28 62l3-1M44 56l2 1M58 60l3-1M70 68l2 .5" stroke-width=".7"/>
+<g fill="#111" stroke="none"><circle cx="30" cy="64" r=".6"/><circle cx="46" cy="58" r=".6"/><circle cx="60" cy="61" r=".6"/><circle cx="48" cy="69" r=".6"/><circle cx="71" cy="70" r=".6"/></g></g></symbol>
+<symbol id="curl" viewBox="0 0 24 24"><path d="M2 12h12c4 0 6-3 4-6-2-2-5 0-4 2 1 1.5 3 1 3-.5M14 12c3 0 5 2 5 5-.5 2.5-3.5 3-4.5 1.5" fill="none" stroke="#111" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="cornerbug" viewBox="0 0 24 24"><g fill="none" stroke="#111" stroke-width="1.2" stroke-linecap="round"><ellipse cx="12" cy="12" rx="6" ry="4.5" transform="rotate(-35 12 12)" fill="url(#hb)"/><path d="M3 18c4 1 13-6 18-13"/><path d="M5 8c1-2 3-2 4-1M15 19c2 0 3-1 3-3"/></g></symbol>
+<symbol id="rbn2" viewBox="0 0 200 50"><g stroke="#111" stroke-width="1.3" stroke-linejoin="round" fill="#fcfbf7">
+<path d="M56 24H2L11 35 2 46H56Z"/><path d="M56 24L44 29V46L56 46Z" fill="url(#hb)"/>
+<path d="M144 24H198L189 35 198 46H144Z"/><path d="M144 24L156 29V46L144 46Z" fill="url(#hb)"/>
+<path d="M44 2H156V29H44Z"/></g></symbol>
+<symbol id="rbn" viewBox="0 0 200 50"><g stroke="#111" stroke-width="1.3" stroke-linejoin="round" fill="#fcfbf7">
+<path d="M24 10H4L12 19.5 4 29H24Z"/><path d="M150 26H196L188 36 196 46H150Z"/><path d="M150 26L162 31V46L150 46Z" fill="url(#hb)"/>
+<path d="M16 4H162V31H16Z"/><path d="M16 31L24 29V31Z" fill="#111"/></g></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <header>
+    <h1>Recetario Pacheco</h1>
+    <p>Todas las recetas con tu diseño final. Cada hoja tiene el mismo espacio que tu mojito, que está a tope: si una receta no cabe, sigue en la hoja siguiente.</p>
+  </header>
+  <section class="summary" aria-label="Resumen de hojas"><table><thead><tr><th>Receta</th><th>De</th><th>Hojas</th><th>Páginas</th></tr></thead><tbody id="sum"></tbody></table></section>
+  <article id="indice"><h2>Índice</h2><div class="pages" id="idxpages"></div></article>
+  <main id="book" class="wrap" style="gap:34px"></main>
+</div>
+<div id="meas" aria-hidden="true"></div>
+
+<script>
+const R=[
+{id:"sandwich",chap:"Para picar",t:"Sándwich de Huevo Japonés",who:"Eva",time:"20 min",dd:["egg","mayo","salt","bread","d-fork"],
+ ing:["4 huevos","3 cucharadas de mayonesa","½ cucharada de azúcar","1 cucharada de vinagre","Sal y pimienta","Pan de molde blando"],
+ prep:["Cuece los huevos 10 minutos, enfríalos y pélalos.","Chafa las yemas con la mayonesa, el azúcar, el vinagre, sal y pimienta.","Pica las claras muy pequeñitas y mézclalas con la crema.","Rellena el pan bien gordito, quita la corteza y corta por la mitad."],
+ quote:"¿Qué fue primero, el huevo o el sándwich?"},
+{id:"croquetas",chap:"Para picar",t:"Croquetas de Gambas sin Gluten",who:"Eva",time:"1 h + 1 noche",dd:["shrimp","croqueta","milk","egg","d-whisk"],
+ ing:["300 g de gambas","½ cebolla","70 g de mantequilla","80 g de harina sin gluten","700 ml de leche","Nuez moscada y sal","2 huevos","Pan rallado sin gluten","Aceite para freír"],
+ prep:["Pica las gambas, saltéalas 1 minuto y resérvalas.","Pocha la cebolla muy fina en la mantequilla, añade la harina y tuéstala 2 minutos.","Echa la leche caliente poco a poco sin dejar de remover, unos 15 minutos, hasta que la bechamel quede medio resistente: que se despegue de las paredes.","Añade sal, nuez moscada y las gambas. Tápala con film pegado y a la nevera toda la noche.","Forma las croquetas, pásalas por huevo y pan rallado y fríelas en aceite bien caliente, pocas cada vez."],
+ quote:"Camarón que se duerme… se convierte en croqueta"},
+{id:"fondue",chap:"Para picar",t:"Fondue en Pan",who:"Toñi",time:"45 min",dd:["bread","cheese","onion","mayo","d-spoon"],
+ ing:["1 pan de payés de 1 kg","160 g de Emmental rallado","160 g de queso curado en polvo","175 g de cebolleta","175 g de mayonesa","Pimienta negra","Cebollino picado"],
+ prep:["Corta la tapa del pan y vacíalo. Guarda la miga en trozos para mojar.","Mezcla los quesos, la cebolleta picada, la mayonesa y la pimienta.","Rellena el pan, ponle la tapa y envuélvelo en papel de aluminio.","Al horno a 180 °C unos 25 minutos. Quita el aluminio y 5 minutos más para que se tueste.","Cebollino por encima… ¡y a mojar!"],
+ quote:"Aquí el plato también se come"},
+{id:"hojaldre",chap:"Para picar",t:"Hojaldre de Verduras y Atún",who:"Toñi",time:"40 min",dd:["eggplant","mushroom","zucchini","pepper","tuna"],
+ ing:["1 lámina de hojaldre","½ berenjena","150 g de champiñones","½ calabacín","½ pimiento","½ cebolla (opcional)","1 lata de atún","Queso rallado","Queso de cabra","Anchoas","Aceite"],
+ prep:["Pincha el hojaldre con un tenedor y hornéalo 10 minutos a 200 °C.","Saltea las verduras troceadas con media cucharada de aceite.","Ponlas sobre el hojaldre con el atún y el queso rallado, y al horno 10-15 minutos hasta que gratine.","Al sacarlo, el queso de cabra y las anchoas: el truco de la Toñi."],
+ quote:"Capas y capas, como una buena familia"},
+{id:"torreznos",chap:"Para picar",t:"Torreznos de Soria",who:"Raquel",book:"Recetario Carnicero",time:"45 min",dd:["bacon","salt","pan","d-fork","d-leaf"],
+ ing:["Torreznos de Soria","Sal"],
+ prep:["Corta los torreznos en tiras.","A la sartén a fuego lento, en su propia grasa.","Desgrasa: ve quitando la grasa que suelten.","Sube el fuego al final para que la corteza quede crujiente.","Escúrrelos en papel de cocina y sírvelos calientes con sal."],
+ quote:"De Soria, con gloria",warn:"Confirmar con Raquel tiempos y si les hace algo más."},
+{id:"morros",chap:"Para picar",t:"Morros de Soria",who:"Raquel",book:"Recetario Carnicero",time:"20 min",dd:["pan","salt","chili","d-fork","d-leaf"],
+ ing:["Morro de cerdo cocido","Sal","Pimentón (opcional)"],
+ prep:["Corta el morro en trozos.","A la sartén o la plancha, a fuego medio, hasta que se doren y queden crujientes.","Desgrasa: escúrrelos bien en papel de cocina.","Sal y un poco de pimentón por encima, y a la mesa calentitos."],
+ quote:"¡Para chuparse los morros!",warn:"Confirmar con Raquel cómo hace los morros (cocidos y a la plancha, rebozados, en salsa…)."},
+{id:"futbol",chap:"Ensaladas",t:"Ensalada de Fútbol",who:"Javi",book:"Recetario Pacheco & Cegarra",time:"30 min",dd:["ball","tuna","olive","egg","bowl"],
+ ing:["300 g de arroz","4 latas de atún","Olivas","Tortilla francesa (pág. @tortilla)","Aceite, sal y pimienta"],
+ prep:["Cuece el arroz y escúrrelo: se come caliente.","Haz la tortilla francesa y córtala a tiras, sin enrollar.","Mézclalo todo con el atún y las olivas.","Aliña con aceite, sal y pimienta… ¡y a jugar el partido!"],
+ quote:"La ensalada que gana todos los partidos"},
+{id:"pasta",chap:"Ensaladas",t:"Ensalada de Pasta Templada",who:"Javi",book:"Recetario Pacheco & Cegarra",time:"20 min",dd:["macaroni","tuna","olive","bottle","d-fork"],
+ ing:["300 g de macarrones","4 latas de atún","Olivas","Vinagre de Módena","Aceite y sal"],
+ prep:["Cuece los macarrones con sal y escúrrelos.","Mézclalos enseguida, aún calientes, con el atún y las olivas: es un plato templado.","Aliña con vinagre de Módena, aceite y sal."],
+ quote:"El que espera a que se enfríe, se queda sin pasta"},
+{id:"tortilla",chap:"Platos",t:"Tortilla Francesa",who:"Lorena",time:"5 min",dd:["egg","cracked","salt","oil","d-whisk"],
+ ing:["1 huevo","Sal","Aceite"],
+ prep:["Bate el huevo sin sal hasta que esté espumoso y blanquito, sin llegar a punto de nieve.","Pon el aceite en la sartén y, cuando esté caliente, echa la sal en el aceite.","Echa el huevo encima y extiéndelo muy fino por toda la sartén.","Cuando se dore, dale la vuelta. No se dobla: redonda y plana."],
+ quote:"Para hacer una buena tortilla, hay que romper algún huevo"},
+{id:"chile",chap:"Platos",t:"Chile con Carne",who:"Eva",time:"1 h 15 min + 1 noche",dd:["chili","pepper","tomato","avocado","onion"],
+ ing:["500 g de carne picada","1 cebolla","1 pimiento rojo","2 dientes de ajo","400 g de tomate triturado","1 bote de alubias rojas","Comino, pimentón y orégano","Cayena o chile en polvo","150 ml de caldo","Aceite, sal y pimienta"],
+ prep:["Pica la cebolla, el pimiento y el ajo pequeñitos.","Sofríe la cebolla y el pimiento 8 minutos. Añade el ajo 1 minuto más.","Sube el fuego y añade la carne, deshaciéndola hasta que pierda el color rosa.","Añade una cucharadita de cada especia y la cayena, y remueve 1 minuto.","Echa el tomate y el caldo, sal y pimienta. Tapa y a fuego bajo 30-40 minutos.","Añade las alubias escurridas y 10 minutos más. Prueba: ¡tiene que picar!","Déjalo de un día para otro en la nevera: está mucho más bueno.","Sírvelo en fajitas, con nachos o con arroz."],
+ quote:"La venganza se sirve fría; el chile, al día siguiente"},
+{id:"calabacin",chap:"Platos",t:"Calabacín Relleno de Atún",who:"Eva",time:"45 min",dd:["zucchini","tuna","onion","cheese","d-spoon"],
+ ing:["2 calabacines","2 latas de atún","1 cebolla","Queso rallado","Aceite y sal"],
+ prep:["Horno a 200 °C. Corta los calabacines a lo largo y vacíalos, dejando 1 cm de borde.","Hornea las barcas 10 minutos con sal y un hilo de aceite.","Sofríe la cebolla, añade la pulpa picada 5 minutos y luego el atún.","Rellena, cubre con queso y gratina 15 minutos hasta que se dore."],
+ quote:"Verde por fuera, dorado por arriba"},
+{id:"empanada",chap:"Platos",t:"Empanada de Atún y Huevo",who:"Eva",time:"1 h",dd:["tuna","egg","tomato","onion","d-rolling"],
+ ing:["Masa sin gluten (Mercadona)","2 latas de atún","3 huevos cocidos","1 bote de tomate frito","1 cebolla (opcional)","1 huevo para pintar"],
+ prep:["Cuece los huevos 10 minutos y pélalos.","Sofríe la cebolla, añade el tomate frito y el atún, y deja que el tomate se evapore.","Casi evaporado, añade las claras a trozos y las yemas chafadas: el relleno tiene que quedar seco.","Deja enfriar. Extiende la masa, pon el relleno, tapa y cierra los bordes con un tenedor.","Pinta con huevo, haz un agujerito y al horno como diga el paquete."],
+ quote:"Quien con atún se acuesta, con empanada se levanta"},
+{id:"canelones",chap:"Platos",t:"Canelones",who:"Toñi",time:"1 h 30 min + 1 noche",dd:["tomato","onion","milk","d-ladle","d-whisk"],
+ ing:["250 g de cuello de cerdo","250 g de ibérico","1 cebolla","Tomate triturado","Paté de hígado","Placas de canelones","1 l de leche","2 cucharadas de mantequilla","80 g de harina","Nuez moscada, sal y pimienta"],
+ prep:["Que te piquen la carne en la carnicería.","Pocha la cebolla y añade el tomate.","Añade la carne con sal y pimienta. Al final, el paté.","A la nevera de un día para otro.","Cuece la pasta como pone en la etiqueta.","Bechamel, en cazuela: derrite la mantequilla, tuesta la harina y echa la leche poco a poco sin parar de remover. Nuez moscada y sal.","Rellena los canelones.","Bechamel en el fondo de la bandeja, los canelones y el resto de bechamel por encima.","Horno caliente a 170 °C, 20 minutos."],
+ quote:"Los canelones de la Toñi no se explican: se repiten"},
+{id:"cangrejos",chap:"Platos",t:"Cangrejos del Duero con Tomate",who:"Raquel",book:"Recetario Carnicero",time:"40 min + la pesca de José",dd:["tomato","onion","chili","bottle","bread"],
+ ing:["1 kg de cangrejos de río","1 cebolla","3 dientes de ajo","1 guindilla","400 g de tomate triturado","1 vaso de vino blanco","Pimentón","Aceite y sal","Pan para mojar"],
+ prep:["Que José los pesque en el Duero.","Lávalos bien con agua fría y quítales la tripa tirando de la aleta del centro de la cola.","Sofríe la cebolla, el ajo y la guindilla picados.","Añade los cangrejos a fuego fuerte hasta que se pongan rojos.","Echa el vino, deja que se evapore y añade el tomate y una pizca de pimentón.","Cuece 10-15 minutos, prueba de sal… ¡y a mojar pan!"],
+ quote:"Cangrejo que se duerme, se lo lleva José",warn:"La receta es la clásica castellana: confirmar con Raquel cómo los hace ella."},
+{id:"rosquillos",chap:"Dulces",t:"Rosquillos",who:"Raquel y Eva",book:"Recetario Pacheco & Carnicero",time:"1 h 30 min",dd:["egg","bottle","scissors","flour","sugar"],
+ ing:["4 huevos","2 vasitos de aceite frito","1 vasito de anís","1 vasito de leche","4 gaseosillas","1 kg de harina","400 g de azúcar","Aceite para freír"],
+ prep:["Monta las claras a punto de nieve.","Añade el azúcar y luego las yemas.","Añade el aceite, la leche y el anís. Sin leche y con 2 vasitos de anís no se ponen duros.","Ve añadiendo la harina con las gaseosillas: entra casi todo el kilo.","Forma los rosquillos con su agujero.","Fríelos en aceite caliente dándoles \"tijeretazos\" alrededor para que queden coronas."],
+ quote:"Con tijera y anís, los rosquillos se coronan reyes"},
+{id:"zanahoria",chap:"Dulces",t:"Bizcocho de Zanahoria",who:"Toñi",time:"1 h",dd:["carrot","egg","flour","sugar","d-whisk"],
+ ing:["250 g de harina","250 g de azúcar","250 g de zanahoria","150 ml de aceite de girasol","3 huevos","15 g de levadura","½ cucharadita de canela","1 pizca de sal"],
+ prep:["Horno a 180 °C y engrasa un molde de 22 cm.","Ralla la zanahoria muy fina: así queda jugoso.","Bate los huevos con el azúcar hasta que blanqueen. Añade el aceite y la zanahoria.","Incorpora la harina, la levadura, la canela y la sal tamizadas, con suavidad.","Hornea 40-45 minutos. Si el palillo sale limpio, ¡listo!"],
+ quote:"Naranja por fuera… y en el bizcocho nadie me encuentra",warn:"La foto solo traía los ingredientes: los pasos los escribí yo. Comprobar con la Toñi."},
+{id:"tiramisu",chap:"Dulces",t:"Tiramisú",who:"Toñi",time:"30 min + 6 h",dd:["cup","egg","sugar","cheese","d-spoon"],
+ ing:["3 huevos","3 cucharadas de azúcar","Bizcochos de soletilla","250-300 g de mascarpone","4 tazas de café","Marsala o moscatel","Cacao amargo"],
+ prep:["Mezcla las yemas con el azúcar.","Monta las claras a punto de nieve.","Añade a las yemas el queso y las claras, mezclando de abajo arriba para no bajarlas.","Mezcla el café frío con un chorrito de licor y moja los bizcochos rápido.","Capa de bizcochos, capa de crema… y termina con crema.","Nevera mínimo 6 horas. Antes de servir, cacao con un colador."],
+ quote:"Tiramisú quiere decir «levántame»… y vaya si lo hace",warn:"El papel de la Toñi acaba en el paso 3: del 4 al 6 son los pasos normales. Comprobar con ella."},
+{id:"lechefrita",chap:"Dulces",t:"Leche Frita",who:"Toñi",time:"30 min + 4 h",dd:["milk","lemon","egg","sugar","pan"],
+ ing:["1 l de leche","150 g de azúcar","90 g de maicena","4 yemas","1 rama de canela","Piel de 1 limón","Harina y 2 huevos","Aceite para freír","Azúcar y canela"],
+ prep:["Calienta 800 ml de leche con la canela y la piel de limón. Cuando hierva, deja reposar 10 minutos y cuela.","Mezcla los otros 200 ml de leche, fríos, con la maicena, el azúcar y las yemas.","Junta las dos y remueve al fuego hasta que espese mucho, 8-10 minutos.","A una fuente, tapa con film y a la nevera mínimo 4 horas: bien fría y espesa, o se deshace.","Corta en cuadrados, pásalos por harina y huevo y fríelos hasta que se doren.","Rebózalos en azúcar con canela."],
+ quote:"Me hacen con leche y me fríen… ¡y no me derrito!",warn:"No tenía la receta de la Toñi: esta es la clásica. Si tienes la suya, pásamela."},
+{id:"churros",chap:"Dulces",t:"Churros y Porras",who:"Manolo",time:"10 min",dd:["cup","sugar","d-cup","d-spoon","milk"],
+ ing:["Dinero","Ganas de madrugar","Tu familia"],
+ prep:["Levántate antes que nadie.","Ve a tu churrería de confianza.","Pide churros, porras o chocolate, según te apetezca… ¡o todo!","Paga. Si vas con Manolo, este paso ya está hecho.","Vuelve a casa, espera a que tu familia se levante y sorpréndelos."],
+ quote:"La mejor receta es la que no se cocina"},
+{id:"mojito",chap:"Bebidas",t:"Mojitos",who:"Eva",time:"5 min",dd:["lemon","mint","bottle","glass","d-leaf"],ref:true,
+ ing:["10 hojas de menta","½ lima","2 cucharadas azúcar moreno","Ron","Seven Up","Hielo picado"],
+ prep:["Pon el azúcar con la lima a trozos en el vaso y aplástalo todo junto.","Añade la menta reservando 3 hojitas para decorar, y el hielo picado.","Añade el ron y el Seven Up, proporción 70/30.","Mézclalo todo, decora con la menta ¡y disfruta!"],
+ quote:"Si la vida te da limas, pide ron"}
+];
+
+// rosquillos drawing, built from numbers (crown cuts around the ring)
+(function(){const f=n=>n.toFixed(1),R2=Math.PI/180;
+ const rq=(cx,cy,s)=>{let o=`<ellipse cx="${f(cx+1)}" cy="${f(cy+5*s)}" rx="${f(17*s)}" ry="${f(7*s)}" fill="url(#k)" stroke="none"/>`;
+  o+=`<ellipse cx="${cx}" cy="${cy}" rx="${f(16*s)}" ry="${f(9*s)}" fill="#fff"/>`;
+  o+=`<path d="M${f(cx-16*s)} ${cy}A${f(16*s)} ${f(9*s)} 0 0 0 ${f(cx+16*s)} ${cy}A${f(16*s)} ${f(5*s)} 0 0 1 ${f(cx-16*s)} ${cy}Z" fill="url(#k)" stroke="none"/>`;
+  const p=(t,k)=>[cx+16*s*k*Math.cos(t*R2),cy+9*s*k*Math.sin(t*R2)];
+  for(let a=195;a<=345;a+=15){const[a1,b1]=p(a-4,1),[a2,b2]=p(a+4,1),[a3,b3]=p(a,.76);o+=`<path d="M${f(a1)} ${f(b1)}L${f(a3)} ${f(b3)}L${f(a2)} ${f(b2)}Z" fill="#111" stroke-width=".5"/>`;}
+  o+=`<ellipse cx="${cx}" cy="${f(cy-s)}" rx="${f(5*s)}" ry="${f(2.6*s)}" fill="#fff"/>`;
+  o+=`<path d="M${f(cx-5*s)} ${f(cy-s)}A${f(5*s)} ${f(2.6*s)} 0 0 1 ${f(cx+5*s)} ${f(cy-s)}A${f(5*s)} ${f(1.3*s)} 0 0 0 ${f(cx-5*s)} ${f(cy-s)}Z" fill="url(#k)" stroke="none"/>`;
+  [[-9,-3],[8,-4],[-11,3],[10,2],[-3,5],[4,6],[12,-1]].forEach(([dx,dy])=>o+=`<circle cx="${f(cx+dx*s)}" cy="${f(cy+dy*s)}" r=".5" fill="#111" stroke="none"/>`);
+  return o;};
+ document.querySelector("defs").insertAdjacentHTML("beforeend",`<symbol id="H-rosquillos" viewBox="0 0 100 100"><g stroke="#111" stroke-width="1.5" stroke-linejoin="round">${rq(28,42,1.3)}${rq(72,40,1.3)}${rq(50,68,1.45)}</g></symbol>`);
+})();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SERVES={sandwich:"2 sándwiches",croquetas:"30 croquetas",fondue:"4 personas",hojaldre:"4 personas",torreznos:"4 personas",morros:"4 personas",
+ futbol:"4 personas",pasta:"4 personas",tortilla:"1 persona",chile:"4 personas",calabacin:"4 personas",empanada:"6 personas",canelones:"6 personas",
+ cangrejos:"4 personas",rosquillos:"50 rosquillos",zanahoria:"8 personas",tiramisu:"6 personas",lechefrita:"20 piezas",churros:"la familia",mojito:"1 vaso"};
+R.forEach(r=>r.serves=SERVES[r.id]);
+const vb=id=>id==="cracked"?"0 0 40 40":"0 0 24 24";
+const use=(id,cls="",st="")=>`<svg class="${cls}" ${st?`style="${st}"`:""} viewBox="${vb(id)}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const ink=id=>{const el=document.getElementById(id); if(!el) return "";
+  return `<svg viewBox="${el.getAttribute("viewBox")}" aria-hidden="true">${el.innerHTML.replace(/<(path|ellipse|circle|rect|line)\b/g,'<$1 vector-effect="non-scaling-stroke"')}</svg>`;};
+const ingText=t=>esc(t).replace(/@(\w+)/g,'<span data-ref="$1">00</span>');
+
+// frame, header and corner doodles shared by every page
+const chrome=r=>`<div class="fr"></div>
+ <div class="hd"><svg viewBox="0 0 24 24" style="transform:scaleX(-1)"><use href="#curl"/></svg>${esc((r.book||"Recetario Pacheco").toUpperCase())}<svg viewBox="0 0 24 24"><use href="#curl"/></svg></div>
+ ${use("cornerbug","cn","left:9.6cqw;top:10.2cqw")}${use("cornerbug","cn","right:9.6cqw;top:10.2cqw;transform:scaleX(-1)")}
+ ${use("cornerbug","cn","left:9.6cqw;bottom:10.2cqw;transform:scaleY(-1)")}${use("cornerbug","cn","right:9.6cqw;bottom:10.2cqw;transform:scale(-1,-1)")}`;
+// cluster of little drawings top-left, like her mojito page
+const SLOTS=[[8,6,9,-8],[50,30,11,0],[4,52,10,6],[40,64,8,-10],[70,74,7,12]];
+const cluster=r=>r.dd.map((id,i)=>{const[x,y,s,rot]=SLOTS[i];return use(id,"",`left:${x}%;top:${y}%;width:${s}cqw;height:${s}cqw;transform:rotate(${rot}deg)`)}).join("")+
+  use("d-heart","","left:42%;top:10%;width:3cqw;height:3cqw")+use("d-heart","","left:84%;top:44%;width:2.6cqw;height:2.6cqw")+use("d-heart","","left:22%;top:88%;width:2.6cqw;height:2.6cqw")+
+  use("d-spark","","left:72%;top:8%;width:3.2cqw;height:3.2cqw")+use("d-spark","","left:30%;top:42%;width:2.6cqw;height:2.6cqw")+use("d-spark","","left:90%;top:90%;width:3cqw;height:3cqw");
+const tail=(s,x)=>s&&s.length<=10?`<text x="${x}" y="40" text-anchor="middle" font-family="Kalam, cursive" font-size="11" textLength="${Math.min(28,s.length*4.4)}" lengthAdjust="spacingAndGlyphs">${esc(s)}</text>`:"";
+const ribbon=r=>{const who=("• "+(r.byline||"de "+r.who)+" •").toUpperCase(), fit=who.length>12?` textLength="128" lengthAdjust="spacingAndGlyphs"`:"";
+  const sv=r.serves, under=[sv&&sv.length>10?sv:"",r.time.length>10?r.time:""].filter(Boolean).join(" · ");
+  return `<svg class="rb" viewBox="0 0 200 50" aria-hidden="true"><use href="#${sv?"rbn2":"rbn"}"/>
+   <text x="${sv?100:89}" y="${sv?21.5:23.5}" text-anchor="middle" font-family="Kalam, cursive" font-size="15"${who.length>12?` textLength="${sv?104:128}" lengthAdjust="spacingAndGlyphs"`:""}>${esc(who)}</text>
+   ${tail(sv,29)}${tail(r.time,172)}</svg>${under?`<div class="tm">${esc(under)}</div>`:""}`;};
+const stepsHTML=(r,a,b)=>b>a?`<ol class="st" start="${a+1}">${r.prep.slice(a,b).map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`:"";
+const quoteHTML=r=>`<div class="fq">“${esc(r.quote.toUpperCase())}”${use("d-leaf")}</div>`;
+
+function firstPage(r,b,end){return `<div class="sheet">${chrome(r)}
+  <div class="top"><div class="cl">${cluster(r)}</div><div class="tw"><h3>${esc(r.t)}</h3>${ribbon(r)}</div></div>
+  <div class="mid"><div><h4>Ingredientes</h4><ul class="ing">${r.ing.map(x=>`<li>${ingText(x)}</li>`).join("")}</ul></div><div class="hero">${ink("H-"+r.id)}</div></div>
+  ${b>0?`<h4>Preparación</h4>${stepsHTML(r,0,b)}`:""}${end?quoteHTML(r):`<div class="sg">sigue en la hoja siguiente →</div>`}</div>`;}
+function coverPage(r){return `<div class="sheet">${chrome(r)}
+  <div class="top"><div class="cl">${cluster(r)}</div><div class="tw"><h3>${esc(r.t)}</h3>${ribbon(r)}</div></div>
+  <h4>Ingredientes</h4><ul class="ing two">${r.ing.map(x=>`<li>${ingText(x)}</li>`).join("")}</ul>
+  <div class="herobig">${ink("H-"+r.id)}</div>
+  <div class="sg">la preparación, en la hoja siguiente →</div></div>`;}
+function nextPage(r,a,b,end){return `<div class="sheet">${chrome(r)}
+  ${use(r.dd[0],"deco","left:15cqw;bottom:30cqw;width:9cqw;height:9cqw;transform:rotate(-10deg)")}${use(r.dd[1],"deco","right:15cqw;bottom:31cqw;width:8cqw;height:8cqw;transform:rotate(8deg)")}${use("d-spark","deco","left:27cqw;bottom:33cqw;width:3cqw;height:3cqw")}${use("d-heart","deco","right:26cqw;bottom:36cqw;width:3cqw;height:3cqw")}
+  <h4 class="h4c">Preparación</h4>${stepsHTML(r,a,b)}${end?quoteHTML(r):`<div class="sg">sigue en la hoja siguiente →</div>`}</div>`;}
+
+const meas=document.getElementById("meas");
+const over=html=>{meas.innerHTML=`<div class="pgw">${html}</div>`;const s=meas.querySelector(".sheet");return s.scrollHeight>s.clientHeight+1;};
+
+// 1) calibrate: the biggest text size at which her mojito page still fits
+function calibrate(){const m=R.find(r=>r.ref);let lo=2,hi=5;
+  for(let i=0;i<16;i++){const mid=(lo+hi)/2;document.documentElement.style.setProperty("--fs",mid);
+    if(over(firstPage(m,m.prep.length,true))) hi=mid; else lo=mid;}
+  document.documentElement.style.setProperty("--fs",(lo*.995).toFixed(3));}
+
+// 2) paginate: fill each page with as many steps as fit, the quote goes on the last one
+function paginate(r){const n=r.prep.length;
+  if(!over(firstPage(r,n,true))) return [firstPage(r,n,true)];
+  // two or more sheets: sheet 1 = title, ingredients and the drawing; the steps start on sheet 2
+  const pages=[coverPage(r)];let a=0;
+  while(a<n){let b=n; while(b>a+1&&over(nextPage(r,a,b,b===n))) b--;
+    if(b===n&&over(nextPage(r,a,n,true))) b=n-1>a?n-1:n;
+    pages.push(nextPage(r,a,b,b===n)); a=b; if(pages.length>6) break;}
+  return pages;}
+function paginateOld(r){const n=r.prep.length,pages=[];let a=0,first=true;
+  while(true){const make=(b,end)=>first?firstPage(r,b,end):nextPage(r,a,b,end);
+    let b=n; while(b>a&&over(make(b,b===n))) b--;
+    if(b===n&&!over(make(n,true))){pages.push(make(n,true));break;}
+    if(b===a){ if(!first) b=a+1; }
+    pages.push(make(b,false)); a=b; first=false;
+    if(pages.length>6) break;}
+  return pages;}
+
+let done={}; try{done=JSON.parse(localStorage.getItem("libro-done")||"{}")}catch(e){}
+function build(){
+  calibrate();
+  let pg=1;const book=document.getElementById("book");let html="",sum="";
+  R.forEach(r=>{r.pages=paginate(r);r.p0=pg;pg+=r.pages.length;});
+  R.forEach(r=>{const N=r.pages.length,rng=N>1?`${r.p0}-${r.p0+N-1}`:`${r.p0}`;
+    sum+=`<tr><td><a href="#${r.id}">${esc(r.t)}</a></td><td>${esc(r.who)}</td><td class="n"><span class="chip ${N===2?"two":N>=3?"three":""}">${N} ${N>1?"hojas":"hoja"}</span></td><td class="n">${rng}</td></tr>`;
+    html+=`<article id="${r.id}" class="${done[r.id]?"is-done":""}"><h2>${esc(r.t)}</h2><div class="pages">${r.pages.map((p,i)=>`<div class="pgw">${p}<div class="pglabel">Página ${r.p0+i}${N>1?` · hoja ${i+1} de ${N}`:""}</div></div>`).join("")}</div>
+     <div class="side">${r.warn?`<div class="warn"><b>Falta confirmar:</b> ${esc(r.warn)}</div>`:""}<label class="done"><input type="checkbox" id="done-${r.id}" ${done[r.id]?"checked":""}> Ya copiada al libro</label></div></article>`;});
+  book.innerHTML=html; document.getElementById("sum").innerHTML=sum;
+  document.querySelectorAll("[data-ref]").forEach(s=>{const t=R.find(r=>r.id===s.dataset.ref);s.textContent=t?t.p0:"?";});
+  // index sheet
+  let ih=`<div class="sheet idx">${chrome({})}<h3>Índice</h3>`,last="";
+  R.forEach(r=>{if(r.chap!==last){ih+=`<div class="chap">${esc(r.chap)}</div>`;last=r.chap;}
+    ih+=`<a href="#${r.id}"><span class="t">${esc(r.t)}</span><span class="dots"></span><span>${r.p0}</span></a>`;});
+  document.getElementById("idxpages").innerHTML=`<div class="pgw">${ih}</div></div>`;
+  meas.innerHTML="";
+}
+build();
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
+document.getElementById("book").addEventListener("change",e=>{if(!e.target.id.startsWith("done-"))return;const id=e.target.id.slice(5);done[id]=e.target.checked;
+  e.target.closest("article").classList.toggle("is-done",e.target.checked);try{localStorage.setItem("libro-done",JSON.stringify(done))}catch(err){}});
+</script>
